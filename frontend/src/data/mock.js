@@ -34,7 +34,33 @@ export const mockDiscoveries = [
   }
 ];
 
-export const mockMissions = [];
+export const mockMissions = [
+  {
+    id: "test_1",
+    title: "Mission sans timer",
+    description: "Test d'une mission avec seulement bouton Fini",
+    category: "travail",
+    hasTimer: false,
+    xpReward: 35,
+    status: "pending",
+    progress: 0,
+    type: "daily",
+    deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: "test_2", 
+    title: "Mission avec timer",
+    description: "Test d'une mission avec timer + bouton Fini",
+    category: "sport",
+    hasTimer: true,
+    estimatedTime: 25,
+    xpReward: 40,
+    status: "pending", 
+    progress: 0,
+    type: "daily",
+    deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+  }
+];
 
 export const mockArtifacts = [];
 
