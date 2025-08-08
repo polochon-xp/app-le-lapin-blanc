@@ -26,7 +26,8 @@ import {
   Gauge,
   Download,
   Upload,
-  Save
+  Save,
+  Brain
 } from 'lucide-react';
 import MissionCreator from './MissionCreator';
 import OptimizationTab from './OptimizationTab';
