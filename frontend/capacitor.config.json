@@ -1,0 +1,23 @@
+{
+  "appId": "com.lepinblanc.mobile",
+  "appName": "Le Lapin Blanc",
+  "webDir": "build",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#1a0d00",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#1a0d00",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#1a0d00"
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
