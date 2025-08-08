@@ -6,7 +6,8 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent } from './ui/card';
-import { Calendar, CalendarDays, Clock, Plus, Target, Brain, Dumbbell, Lightbulb, BookOpen, Zap } from 'lucide-react';
+import { Checkbox } from './ui/checkbox';
+import { Calendar, CalendarDays, Clock, Plus, Target, Briefcase, Dumbbell, Lightbulb, BookOpen, Timer, CheckCircle } from 'lucide-react';
 
 const MissionCreator = ({ onCreateMission, currentTheme }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,19 +15,19 @@ const MissionCreator = ({ onCreateMission, currentTheme }) => {
     title: '',
     description: '',
     category: '',
-    xpReward: 25,
+    hasTimer: false,
     estimatedTime: 15,
     type: 'daily',
     weekDay: '',
     specificDate: ''
   });
 
+  // Nouvelles catégories selon vos spécifications
   const categories = [
-    { value: 'analyseTech', label: 'Analyse Technologique', icon: Brain, color: currentTheme.primaryColor },
-    { value: 'endurance', label: 'Endurance Physique', icon: Dumbbell, color: '#4ade80' },
-    { value: 'innovation', label: 'Innovation Créative', icon: Lightbulb, color: '#fbbf24' },
-    { value: 'documentation', label: 'Recherche Documentaire', icon: BookOpen, color: '#06b6d4' },
-    { value: 'adaptabilite', label: 'Adaptabilité', icon: Zap, color: '#a855f7' }
+    { value: 'travail', label: 'Travail', stat: 'Analyse Technologique', icon: Briefcase, color: currentTheme.primaryColor },
+    { value: 'sport', label: 'Sport', stat: 'Endurance Physique', icon: Dumbbell, color: '#4ade80' },
+    { value: 'creation', label: 'Création', stat: 'Innovation Créative', icon: Lightbulb, color: '#fbbf24' },
+    { value: 'lecture', label: 'Lecture', stat: 'Adaptabilité', icon: BookOpen, color: '#06b6d4' }
   ];
 
   const weekDays = [
@@ -39,13 +40,32 @@ const MissionCreator = ({ onCreateMission, currentTheme }) => {
     { value: 'sunday', label: 'Dimanche' }
   ];
 
+  // Fonction pour calculer automatiquement l'XP selon la catégorie et le temps
+  const calculateXP = (category, estimatedTime, hasTimer) => {
+    const baseXP = {
+      'travail': 30,
+      'sport': 25,
+      'creation': 35,
+      'lecture': 20
+    };
+    
+    const categoryMultiplier = baseXP[category] || 25;
+    const timeBonus = Math.floor(estimatedTime / 15) * 5; // 5 XP par tranche de 15 min
+    const timerBonus = hasTimer ? 10 : 5; // Bonus si timer utilisé
+    
+    return Math.max(10, categoryMultiplier + timeBonus + timerBonus);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!mission.title || !mission.category) return;
 
+    const xpReward = calculateXP(mission.category, mission.estimatedTime, mission.hasTimer);
+
     const newMission = {
       id: `m_${Date.now()}`,
       ...mission,
+      xpReward,
       status: 'pending',
       progress: 0,
       deadline: getDeadline()
@@ -57,7 +77,7 @@ const MissionCreator = ({ onCreateMission, currentTheme }) => {
       title: '',
       description: '',
       category: '',
-      xpReward: 25,
+      hasTimer: false,
       estimatedTime: 15,
       type: 'daily',
       weekDay: '',
@@ -147,60 +167,67 @@ const MissionCreator = ({ onCreateMission, currentTheme }) => {
           {/* Catégorie */}
           <div>
             <Label className="text-xs text-gray-400">
-              Discipline de recherche
+              Catégorie
             </Label>
-            <Select 
-              value={mission.category} 
-              onValueChange={(value) => setMission(prev => ({ ...prev, category: value }))}
-              required
-            >
-              <SelectTrigger className="mt-1 border-0 bg-black/50 text-sm h-9"
-                             style={{
-                               backgroundColor: currentTheme.backgroundColor + '80',
-                               color: currentTheme.textColor
-                             }}>
-                <SelectValue placeholder="Choisir..." />
-              </SelectTrigger>
-              <SelectContent className="border-0" style={{ backgroundColor: currentTheme.cardColor }}>
-                {categories.map(cat => {
-                  const Icon = cat.icon;
-                  return (
-                    <SelectItem key={cat.value} value={cat.value} className="text-sm">
-                      <div className="flex items-center space-x-2">
-                        <Icon className="w-3 h-3" style={{ color: cat.color }} />
-                        <span>{cat.label}</span>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {categories.map(cat => {
+                const Icon = cat.icon;
+                const isSelected = mission.category === cat.value;
+                return (
+                  <Card 
+                    key={cat.value}
+                    className={`cursor-pointer transition-all border-0 ${
+                      isSelected ? 'ring-1' : ''
+                    }`}
+                    style={{ 
+                      backgroundColor: isSelected ? cat.color + '30' : currentTheme.backgroundColor + '80',
+                      ringColor: cat.color
+                    }}
+                    onClick={() => setMission(prev => ({ ...prev, category: cat.value }))}
+                  >
+                    <CardContent className="p-3">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <Icon className="w-4 h-4" style={{ color: cat.color }} />
+                        <span className="text-xs font-medium" style={{ color: currentTheme.textColor }}>
+                          {cat.label}
+                        </span>
                       </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+                      <p className="text-xs text-gray-400">
+                        {cat.stat}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Récompenses et durée */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="xpReward" className="text-xs text-gray-400">
-                XP
-              </Label>
-              <Input
-                id="xpReward"
-                type="number"
-                value={mission.xpReward}
-                onChange={(e) => setMission(prev => ({ ...prev, xpReward: parseInt(e.target.value) }))}
-                min="5"
-                max="200"
-                className="mt-1 border-0 bg-black/50 text-sm h-9"
-                style={{
-                  backgroundColor: currentTheme.backgroundColor + '80',
-                  color: currentTheme.textColor
-                }}
-              />
+          {/* Timer optionnel */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-black/30">
+            <div className="flex items-center space-x-3">
+              <Timer className="w-4 h-4" style={{ color: currentTheme.primaryColor }} />
+              <div>
+                <p className="text-sm" style={{ color: currentTheme.textColor }}>
+                  Utiliser un timer
+                </p>
+                <p className="text-xs text-gray-400">
+                  Mode focus avec minuteur
+                </p>
+              </div>
             </div>
-            
+            <Checkbox
+              checked={mission.hasTimer}
+              onCheckedChange={(checked) => setMission(prev => ({ ...prev, hasTimer: checked }))}
+              className="border-2"
+              style={{ borderColor: currentTheme.primaryColor }}
+            />
+          </div>
+
+          {/* Temps estimé (affiché seulement si timer activé) */}
+          {mission.hasTimer && (
             <div>
               <Label htmlFor="estimatedTime" className="text-xs text-gray-400">
-                Temps (min)
+                Temps estimé (minutes)
               </Label>
               <Input
                 id="estimatedTime"
@@ -216,7 +243,22 @@ const MissionCreator = ({ onCreateMission, currentTheme }) => {
                 }}
               />
             </div>
-          </div>
+          )}
+
+          {/* XP Calculé automatiquement */}
+          {mission.category && (
+            <div className="p-3 rounded-lg bg-black/30">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">XP Automatique</span>
+                <div className="flex items-center space-x-2">
+                  <Target className="w-3 h-3" style={{ color: currentTheme.primaryColor }} />
+                  <span className="text-sm font-bold" style={{ color: currentTheme.primaryColor }}>
+                    +{calculateXP(mission.category, mission.estimatedTime, mission.hasTimer)} XP
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Type de récurrence */}
           <div>
