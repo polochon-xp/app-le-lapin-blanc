@@ -182,6 +182,7 @@ const GameInterface = () => {
   const MissionCard = ({ mission }) => {
     const isActive = activeTimer === mission.id;
     const canStart = mission.status === 'pending' && !activeTimer;
+    const canFinish = mission.status === 'pending' && !isActive;
     
     return (
       <Card className="border-0 bg-black/50 backdrop-blur-sm" 
@@ -211,40 +212,69 @@ const GameInterface = () => {
               <Target className="w-3 h-3 mr-1" />
               +{mission.xpReward} XP
             </span>
-            <span className="text-xs text-gray-400 flex items-center">
-              <Clock className="w-3 h-3 mr-1" />
-              {mission.estimatedTime}min
-            </span>
+            {mission.hasTimer && (
+              <span className="text-xs text-gray-400 flex items-center">
+                <Clock className="w-3 h-3 mr-1" />
+                {mission.estimatedTime}min
+              </span>
+            )}
           </div>
           
           {mission.progress > 0 && (
             <Progress value={mission.progress} className="mb-3 h-1" />
           )}
           
-          <Button 
-            onClick={() => startMission(mission)}
-            disabled={!canStart}
-            className="w-full text-xs h-8"
-            style={{
-              backgroundColor: isActive ? currentTheme.accentColor : currentTheme.primaryColor,
-              color: currentTheme.backgroundColor,
-              border: 'none'
-            }}
-          >
-            {isActive ? (
-              <span className="flex items-center">
-                <Pause className="w-3 h-3 mr-1" />
-                {formatTime(timeLeft)}
-              </span>
-            ) : mission.status === 'completed' ? (
-              'Terminé'
-            ) : (
-              <span className="flex items-center">
-                <Play className="w-3 h-3 mr-1" />
-                Démarrer
-              </span>
+          <div className="flex space-x-2">
+            {/* Bouton Timer (si la mission a un timer) */}
+            {mission.hasTimer && (
+              <Button 
+                onClick={() => startMission(mission)}
+                disabled={!canStart}
+                className="flex-1 text-xs h-8"
+                style={{
+                  backgroundColor: isActive ? currentTheme.accentColor : currentTheme.primaryColor + '80',
+                  color: currentTheme.backgroundColor,
+                  border: 'none'
+                }}
+              >
+                {isActive ? (
+                  <span className="flex items-center">
+                    <Pause className="w-3 h-3 mr-1" />
+                    {formatTime(timeLeft)}
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <Play className="w-3 h-3 mr-1" />
+                    Timer
+                  </span>
+                )}
+              </Button>
             )}
-          </Button>
+            
+            {/* Bouton Fini (toujours présent) */}
+            <Button 
+              onClick={() => handleMissionComplete(mission.id)}
+              disabled={!canFinish}
+              className={`${mission.hasTimer ? 'flex-1' : 'w-full'} text-xs h-8`}
+              style={{
+                backgroundColor: mission.status === 'completed' ? '#10b981' : currentTheme.primaryColor,
+                color: currentTheme.backgroundColor,
+                border: 'none'
+              }}
+            >
+              {mission.status === 'completed' ? (
+                <span className="flex items-center">
+                  <Trophy className="w-3 h-3 mr-1" />
+                  Terminé
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <Target className="w-3 h-3 mr-1" />
+                  Fini
+                </span>
+              )}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
