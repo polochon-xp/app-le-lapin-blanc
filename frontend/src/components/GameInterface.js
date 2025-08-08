@@ -160,12 +160,9 @@ const GameInterface = () => {
         </div>
         <div className="flex-1">
           <div className="flex justify-between text-sm">
-            <span style={{ color: currentTheme.textColor }} className="font-medium">
-              {category === 'analyseTech' ? 'Analyse Tech' :
-               category === 'endurance' ? 'Endurance' :
-               category === 'innovation' ? 'Innovation' :
-               category === 'documentation' ? 'Documentation' : 'Adaptabilité'} 
-              <span className="ml-2 text-xs opacity-70">Niv {data.level}</span>
+            <span style={{ color: currentTheme.textColor }} className="font-bold pixel-font">
+              {getStatName(category)}
+              <span className="ml-2 text-xs opacity-70">LV.{data.level}</span>
             </span>
             <span className="text-gray-400 text-xs">{data.xp}/{data.maxXp}</span>
           </div>
