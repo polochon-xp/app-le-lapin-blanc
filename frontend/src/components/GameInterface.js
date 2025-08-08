@@ -50,7 +50,7 @@ const GameInterface = () => {
   const [activeTimer, setActiveTimer] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState(themes.matrix);
+  const [currentTheme, setCurrentTheme] = useState(themes.retro);
 
   // Timer functionality
   useEffect(() => {
