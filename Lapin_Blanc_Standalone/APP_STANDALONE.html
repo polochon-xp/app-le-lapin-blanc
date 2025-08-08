@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🎮 Le Lapin Blanc - RPG Mobile</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0d00 0%, #2d1300 50%, #1a0d00 100%);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: rgba(26, 13, 0, 0.95);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 107, 53, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .header h1 {
+            color: #1a0d00;
+            font-size: 1.8em;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .signature {
+            color: #00ff41;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+            margin-top: 5px;
+            opacity: 0.8;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        }
+        
+        .player-info {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 15px;
+            margin: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+        
+        .player-name {
+            color: #ff6b35;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .health-energy {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .health-bar .bar-fill { background: linear-gradient(90deg, #ff4757, #ff6b35); }
+        .energy-bar .bar-fill { background: linear-gradient(90deg, #00ff41, #7ed321); }
+        
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 15px;
+            gap: 8px;
+        }
+        
+        .tab {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            color: #1a0d00;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+        }
+        
+        .tab:hover {
+            background: rgba(255, 107, 53, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .content {
+            padding: 20px 15px;
+            min-height: 400px;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            text-align: center;
+        }
+        
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .stat-name {
+            color: #ff6b35;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-level {
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+        
+        .mission-card {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            margin-bottom: 15px;
+        }
+        
+        .mission-title {
+            color: #ff6b35;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .mission-desc {
+            color: #ccc;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+        
+        .mission-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            color: #1a0d00;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            border: 1px solid rgba(255, 107, 53, 0.5);
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
+        }
+        
+        .hidden { display: none; }
+        
+        .technique-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .technique-item {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            margin-bottom: 10px;
+        }
+        
+        .technique-name {
+            color: #ff6b35;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .technique-desc {
+            color: #ccc;
+            font-size: 0.85em;
+        }
+        
+        .install-prompt {
+            background: linear-gradient(135deg, #00ff41, #7ed321);
+            color: #1a0d00;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 15px rgba(0, 255, 65, 0.3);
+        }
+        
+        .install-prompt:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 255, 65, 0.4);
+        }
+        
+        @media (max-width: 480px) {
+            .stat-grid { grid-template-columns: 1fr; }
+            .tabs { padding: 10px 5px; }
+            .tab { padding: 8px 10px; font-size: 0.8em; min-width: 70px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🎮 Le Lapin Blanc</h1>
+            <div class="signature">Je suis le lapin blancs</div>
+        </div>
+        
+        <div class="player-info">
+            <div class="player-name">👤 Novice-001 • Niveau 1</div>
+            <div class="health-energy">
+                <div class="health-bar">
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <small>Santé: 100/100</small>
+                </div>
+                <div class="energy-bar">
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 85%;"></div>
+                    </div>
+                    <small>Énergie: 85/100</small>
+                </div>
+            </div>
+            <small style="color: #00ff41;">XP: 25/100 vers Niveau 2</small>
+        </div>
+        
+        <div class="install-prompt" onclick="installApp()">
+            📱 INSTALLER L'APPLICATION MOBILE
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('stats')">📊 Stats</div>
+            <div class="tab" onclick="showTab('missions')">🎯 Missions</div>
+            <div class="tab" onclick="showTab('discoveries')">🔍 Découvertes</div>
+            <div class="tab" onclick="showTab('artifacts')">📦 Artefacts</div>
+            <div class="tab" onclick="showTab('story')">📖 Histoire</div>
+            <div class="tab" onclick="showTab('optimization')">🧠 Optimisation</div>
+        </div>
+        
+        <div class="content">
+            <div id="stats-content">
+                <h2 style="color: #ff6b35; margin-bottom: 20px;">📊 Statistiques RPG</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon">💼</span>
+                        <div class="stat-name">Travail</div>
+                        <div class="stat-level">LV.0 • Analyse Technologique</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">💪</span>
+                        <div class="stat-name">Sport</div>
+                        <div class="stat-level">LV.0 • Endurance Physique</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">💡</span>
+                        <div class="stat-name">Création</div>
+                        <div class="stat-level">LV.0 • Innovation Créative</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">📚</span>
+                        <div class="stat-name">Lecture</div>
+                        <div class="stat-level">LV.0 • Adaptabilité</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="missions-content" class="hidden">
+                <h2 style="color: #ff6b35; margin-bottom: 20px;">🎯 Mes Missions</h2>
+                
+                <div class="mission-card">
+                    <div class="mission-title">Mission Simple</div>
+                    <div class="mission-desc">Seulement bouton Fini • +35 XP</div>
+                    <div class="mission-buttons">
+                        <button class="btn btn-primary" onclick="completeMission('simple')">🏆 Fini</button>
+                    </div>
+                </div>
+                
+                <div class="mission-card">
+                    <div class="mission-title">Mission avec Timer</div>
+                    <div class="mission-desc">Timer + bouton Fini • 20min • +40 XP</div>
+                    <div class="mission-buttons">
+                        <button class="btn btn-secondary" onclick="startTimer(20)">⏰ Timer</button>
+                        <button class="btn btn-primary" onclick="completeMission('timer')">🏆 Fini</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="discoveries-content" class="hidden">
+                <h2 style="color: #ff6b35; margin-bottom: 20px;">🔍 Journal de Découvertes</h2>
+                <div class="technique-item">
+                    <div class="technique-name">🚨 Signal d'alarme détecté</div>
+                    <div class="technique-desc">Des anomalies dans les communications mondiales suggèrent un événement majeur...</div>
+                </div>
+            </div>
+            
+            <div id="artifacts-content" class="hidden">
+                <h2 style="color: #ff6b35; margin-bottom: 20px;">📦 Artefacts & Collectibles</h2>
+                <div class="technique-item">
+                    <div class="technique-name">🔮 Cristal de Données</div>
+                    <div class="technique-desc">Un fragment de données corrompues trouvé dans les archives du laboratoire...</div>
+                </div>
+            </div>
+            
+            <div id="story-content" class="hidden">
+                <h2 style="color: #ff6b35; margin-bottom: 20px;">📖 Histoire Évolutive</h2>
+                <div class="technique-item">
+                    <div class="technique-name">🧬 Chapitre 1: Le Laboratoire Abandonné</div>
+                    <div class="technique-desc">Dr. Elena Vasquez travaillait sur un sérum d'immortalité. Mais quelque chose a mal tourné...</div>
+                </div>
+            </div>
+            
+            <div id="optimization-content" class="hidden">
+                <h2 style="color: #ff6b35; margin-bottom: 20px;">🧠 Optimisation Cognitive</h2>
+                <div class="technique-list">
+                    <div class="technique-item">
+                        <div class="technique-name">⚡ ANKI-SPACED REPETITION</div>
+                        <div class="technique-desc">Système de répétition espacée pour optimiser la mémorisation à long terme</div>
+                    </div>
+                    <div class="technique-item">
+                        <div class="technique-name">🎯 FEYNMAN TECHNIQUE 2.0</div>
+                        <div class="technique-desc">Expliquer des concepts complexes de manière simple pour vérifier sa compréhension</div>
+                    </div>
+                    <div class="technique-item">
+                        <div class="technique-name">🍅 POMODORO TECHNIQUE</div>
+                        <div class="technique-desc">Cycles de travail de 25 minutes avec pauses pour optimiser la concentration</div>
+                    </div>
+                    <div class="technique-item">
+                        <div class="technique-name">🎨 MIND MAPPING AVANCÉ</div>
+                        <div class="technique-desc">Visualisation des connaissances sous forme de cartes mentales colorées</div>
+                    </div>
+                    <div class="technique-item">
+                        <div class="technique-name">🧘 MÉDITATION COGNITIVE</div>
+                        <div class="technique-desc">Pratique de pleine conscience pour améliorer la concentration et réduire le stress</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'stats';
+        let timerActive = false;
+        
+        function showTab(tab) {
+            // Masquer tous les contenus
+            document.querySelectorAll('[id$="-content"]').forEach(el => el.classList.add('hidden'));
+            
+            // Désactiver tous les onglets
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            
+            // Activer l'onglet et le contenu sélectionnés
+            document.getElementById(tab + '-content').classList.remove('hidden');
+            event.target.classList.add('active');
+            currentTab = tab;
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('lapinBlancCurrentTab', tab);
+        }
+        
+        function completeMission(type) {
+            alert('🎉 Mission terminée ! +' + (type === 'simple' ? '35' : '40') + ' XP gagnés !');
+            
+            // Animation de réussite
+            event.target.style.background = '#10b981';
+            event.target.textContent = '✅ Terminé';
+            event.target.disabled = true;
+        }
+        
+        function startTimer(minutes) {
+            if (timerActive) return;
+            
+            timerActive = true;
+            const button = event.target;
+            const originalText = button.textContent;
+            let timeLeft = minutes * 60;
+            
+            const countdown = setInterval(() => {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                button.textContent = `⏰ ${mins}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    button.textContent = originalText;
+                    timerActive = false;
+                    alert('⏰ Timer terminé ! Vous pouvez maintenant terminer la mission.');
+                }
+                timeLeft--;
+            }, 1000);
+        }
+        
+        function installApp() {
+            if ('serviceWorker' in navigator) {
+                // Enregistrer le service worker pour PWA
+                navigator.serviceWorker.register('sw.js').catch(console.log);
+            }
+            
+            // Vérifier si on peut installer
+            if (window.deferredPrompt) {
+                window.deferredPrompt.prompt();
+                window.deferredPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') {
+                        alert('🎉 Application installée avec succès !');
+                    }
+                    window.deferredPrompt = null;
+                });
+            } else {
+                // Instructions manuelles
+                let instructions = '';
+                if (/Android/i.test(navigator.userAgent)) {
+                    instructions = '📱 Android: Menu (⋮) → "Ajouter à l\'écran d\'accueil"';
+                } else if (/iPhone|iPad/i.test(navigator.userAgent)) {
+                    instructions = '📱 iPhone: Bouton Partager → "Sur l\'écran d\'accueil"';
+                } else {
+                    instructions = '💻 Desktop: Cliquez sur l\'icône d\'installation dans la barre d\'adresse';
+                }
+                
+                alert('📱 Pour installer l\'application :\n\n' + instructions + '\n\nL\'app fonctionnera alors hors ligne !');
+            }
+        }
+        
+        // Événements PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            alert('🎉 Application installée avec succès ! Elle fonctionne maintenant hors ligne.');
+        });
+        
+        // Restaurer l'onglet sauvegardé
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTab = localStorage.getItem('lapinBlancCurrentTab');
+            if (savedTab && savedTab !== 'stats') {
+                showTab(savedTab);
+            }
+        });
+        
+        // Messages de debug
+        console.log('🎮 Le Lapin Blanc - Application Mobile chargée !');
+        console.log('📱 Pour installer : utilisez le bouton "INSTALLER L\'APPLICATION MOBILE"');
+    </script>
+</body>
+</html>
