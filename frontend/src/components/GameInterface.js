@@ -21,9 +21,25 @@ import {
   Pause,
   Trophy,
   Package,
-  ScrollText
+  ScrollText,
+  Plus,
+  Target,
+  Gauge
 } from 'lucide-react';
-import { mockPlayer, mockStats, mockMissions, mockDiscoveries, mockArtifacts, themes, updateMissionProgress, addXPToStat } from '../data/mock';
+import MissionCreator from './MissionCreator';
+import OptimizationTab from './OptimizationTab';
+import { 
+  mockPlayer, 
+  mockStats, 
+  mockMissions, 
+  mockDiscoveries, 
+  mockArtifacts, 
+  themes, 
+  updateMissionProgress, 
+  addXPToStat,
+  unlockContentForLevel,
+  getRandomArtifact
+} from '../data/mock';
 
 const GameInterface = () => {
   const [player, setPlayer] = useState(mockPlayer);
@@ -61,13 +77,42 @@ const GameInterface = () => {
     if (mission) {
       // Update mission progress
       updateMissionProgress(missionId, 100);
+      
       // Add XP to relevant stat
-      addXPToStat(mission.category, mission.xpReward);
-      // Update player level
+      const updatedStat = addXPToStat(mission.category, mission.xpReward);
+      setStats(prev => ({
+        ...prev,
+        [mission.category]: updatedStat
+      }));
+      
+      // Update player level and check for unlocks
+      const newTotalXP = player.totalXP + mission.xpReward;
+      const newLevel = Math.floor(newTotalXP / 100) + 1;
+      
       setPlayer(prev => ({
         ...prev,
-        totalXP: prev.totalXP + mission.xpReward
+        totalXP: newTotalXP,
+        level: newLevel,
+        xpToNextLevel: 100 - (newTotalXP % 100)
       }));
+      
+      // Check for level-based unlocks
+      if (newLevel > player.level) {
+        const unlockedContent = unlockContentForLevel(newLevel);
+        if (unlockedContent.discoveries) {
+          setDiscoveries(prev => [...prev, ...unlockedContent.discoveries]);
+        }
+        if (unlockedContent.artifacts) {
+          setArtifacts(prev => [...prev, ...unlockedContent.artifacts]);
+        }
+      }
+      
+      // Chance of finding artifact
+      if (Math.random() < 0.3) {
+        const newArtifact = getRandomArtifact();
+        setArtifacts(prev => [...prev, newArtifact]);
+      }
+      
       // Mark mission as completed
       setMissions(prev => prev.map(m => 
         m.id === missionId ? { ...m, status: 'completed', progress: 100 } : m
@@ -94,29 +139,29 @@ const GameInterface = () => {
 
   const StatCard = ({ category, data }) => {
     const Icon = getStatIcon(category);
-    const percentage = (data.xp / data.maxXp) * 100;
+    const percentage = data.maxXp > 0 ? (data.xp / data.maxXp) * 100 : 0;
     
     return (
-      <div className="flex items-center space-x-3 p-2 rounded border" 
+      <div className="flex items-center space-x-3 p-3 rounded-lg border bg-black/40 backdrop-blur-sm" 
            style={{ borderColor: currentTheme.accentColor + '40' }}>
-        <Icon className="w-5 h-5" style={{ color: currentTheme.primaryColor }} />
+        <div className="p-2 rounded-full" style={{ backgroundColor: currentTheme.primaryColor + '20' }}>
+          <Icon className="w-4 h-4" style={{ color: currentTheme.primaryColor }} />
+        </div>
         <div className="flex-1">
           <div className="flex justify-between text-sm">
-            <span style={{ color: currentTheme.textColor }}>
+            <span style={{ color: currentTheme.textColor }} className="font-medium">
               {category === 'analyseTech' ? 'Analyse Tech' :
                category === 'endurance' ? 'Endurance' :
                category === 'innovation' ? 'Innovation' :
                category === 'documentation' ? 'Documentation' : 'Adaptabilité'} 
-              (Niv {data.level})
+              <span className="ml-2 text-xs opacity-70">Niv {data.level}</span>
             </span>
-            <span className="text-gray-400">{data.xp}/{data.maxXp}</span>
+            <span className="text-gray-400 text-xs">{data.xp}/{data.maxXp}</span>
           </div>
           <Progress 
             value={percentage} 
-            className="h-2 mt-1"
-            style={{ 
-              backgroundColor: currentTheme.cardColor,
-            }}
+            className="h-2 mt-2"
+            style={{ backgroundColor: currentTheme.cardColor }}
           />
         </div>
       </div>
@@ -128,57 +173,63 @@ const GameInterface = () => {
     const canStart = mission.status === 'pending' && !activeTimer;
     
     return (
-      <Card className="border" style={{ 
-        borderColor: currentTheme.accentColor + '40',
-        backgroundColor: currentTheme.cardColor 
-      }}>
+      <Card className="border-0 bg-black/50 backdrop-blur-sm" 
+            style={{ backgroundColor: currentTheme.cardColor + 'aa' }}>
         <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <h4 className="font-medium" style={{ color: currentTheme.textColor }}>
+          <div className="flex justify-between items-start mb-3">
+            <h4 className="font-medium text-sm" style={{ color: currentTheme.textColor }}>
               {mission.title}
             </h4>
-            <Badge variant={
-              mission.type === 'daily' ? 'default' :
-              mission.type === 'weekly' ? 'secondary' : 'destructive'
-            }>
+            <Badge 
+              variant="outline" 
+              className="text-xs border-0"
+              style={{ 
+                backgroundColor: currentTheme.primaryColor + '20',
+                color: currentTheme.primaryColor 
+              }}
+            >
               {mission.type === 'daily' ? 'Quotidien' :
-               mission.type === 'weekly' ? 'Hebdomadaire' : 'Unique'}
+               mission.type === 'weekly' ? 'Hebdo' : 'Unique'}
             </Badge>
           </div>
-          <p className="text-sm text-gray-400 mb-3">{mission.description}</p>
+          
+          <p className="text-xs text-gray-400 mb-3 line-clamp-2">{mission.description}</p>
+          
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm" style={{ color: currentTheme.primaryColor }}>
+            <span className="text-xs flex items-center" style={{ color: currentTheme.primaryColor }}>
+              <Target className="w-3 h-3 mr-1" />
               +{mission.xpReward} XP
             </span>
-            <span className="text-sm text-gray-400 flex items-center">
-              <Clock className="w-4 h-4 mr-1" />
+            <span className="text-xs text-gray-400 flex items-center">
+              <Clock className="w-3 h-3 mr-1" />
               {mission.estimatedTime}min
             </span>
           </div>
           
           {mission.progress > 0 && (
-            <Progress value={mission.progress} className="mb-3" />
+            <Progress value={mission.progress} className="mb-3 h-1" />
           )}
           
           <Button 
             onClick={() => startMission(mission)}
             disabled={!canStart}
-            className="w-full"
+            className="w-full text-xs h-8"
             style={{
               backgroundColor: isActive ? currentTheme.accentColor : currentTheme.primaryColor,
-              color: currentTheme.backgroundColor
+              color: currentTheme.backgroundColor,
+              border: 'none'
             }}
           >
             {isActive ? (
               <span className="flex items-center">
-                <Pause className="w-4 h-4 mr-2" />
-                En cours... {formatTime(timeLeft)}
+                <Pause className="w-3 h-3 mr-1" />
+                {formatTime(timeLeft)}
               </span>
             ) : mission.status === 'completed' ? (
               'Terminé'
             ) : (
               <span className="flex items-center">
-                <Play className="w-4 h-4 mr-2" />
+                <Play className="w-3 h-3 mr-1" />
                 Démarrer
               </span>
             )}
@@ -188,28 +239,48 @@ const GameInterface = () => {
     );
   };
 
+  const addMission = (newMission) => {
+    setMissions(prev => [...prev, newMission]);
+  };
+
   return (
     <div 
-      className="min-h-screen p-4"
+      className="min-h-screen p-3 relative overflow-hidden"
       style={{ 
-        backgroundColor: currentTheme.backgroundColor,
-        color: currentTheme.textColor 
+        backgroundColor: currentTheme.backgroundColor
       }}
     >
+      {/* Background Matrix Effect */}
+      <div className="fixed inset-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-900/20 to-transparent"></div>
+        <div className="matrix-rain">
+          {Array.from({length: 20}).map((_, i) => (
+            <div key={i} className="matrix-column" style={{left: `${i * 5}%`}}>
+              {Array.from({length: 20}).map((_, j) => (
+                <span key={j} className="matrix-char" style={{animationDelay: `${Math.random() * 5}s`}}>
+                  {String.fromCharCode(65 + Math.floor(Math.random() * 26))}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Timer Overlay */}
       {activeTimer && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-          <Card className="w-96" style={{ backgroundColor: currentTheme.cardColor }}>
-            <CardHeader className="text-center">
-              <CardTitle style={{ color: currentTheme.primaryColor }}>
-                Mission en cours
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50">
+          <Card className="w-80 border-0 bg-black/90">
+            <CardHeader className="text-center pb-4">
+              <CardTitle style={{ color: currentTheme.primaryColor }} className="text-lg">
+                MISSION EN COURS
               </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="text-6xl font-mono mb-4" style={{ color: currentTheme.primaryColor }}>
+              <div className="text-4xl font-mono mb-4 tracking-wider" 
+                   style={{ color: currentTheme.primaryColor }}>
                 {formatTime(timeLeft)}
               </div>
-              <p className="text-gray-400 mb-6">
+              <p className="text-gray-400 mb-6 text-sm">
                 Restez concentré sur votre mission...
               </p>
               <Button 
@@ -218,7 +289,12 @@ const GameInterface = () => {
                   setActiveTimer(null);
                   setTimeLeft(0);
                 }}
-                style={{ borderColor: currentTheme.accentColor, color: currentTheme.textColor }}
+                className="border-0 text-xs"
+                style={{ 
+                  borderColor: currentTheme.accentColor, 
+                  color: currentTheme.textColor,
+                  backgroundColor: 'transparent'
+                }}
               >
                 Abandonner la mission
               </Button>
@@ -227,198 +303,250 @@ const GameInterface = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-4">
-            <User className="w-8 h-8" style={{ color: currentTheme.primaryColor }} />
+      <div className="max-w-md mx-auto relative z-10">
+        {/* Header Mobile */}
+        <div className="flex justify-between items-center mb-4 bg-black/50 backdrop-blur-sm p-3 rounded-xl border"
+             style={{ borderColor: currentTheme.accentColor + '40' }}>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-full" style={{ backgroundColor: currentTheme.primaryColor + '20' }}>
+              <User className="w-5 h-5" style={{ color: currentTheme.primaryColor }} />
+            </div>
             <div>
-              <h1 className="text-2xl font-bold" style={{ color: currentTheme.textColor }}>
+              <h1 className="text-lg font-bold" style={{ color: currentTheme.textColor }}>
                 {player.name}
               </h1>
-              <p className="text-sm text-gray-400">Niveau {player.level} • {player.totalXP} XP</p>
+              <p className="text-xs text-gray-400">Niv {player.level} • {player.totalXP} XP</p>
             </div>
           </div>
           
           <Button 
-            variant="outline"
+            variant="ghost"
             onClick={() => setShowSettings(true)}
-            style={{ borderColor: currentTheme.accentColor, color: currentTheme.textColor }}
+            className="p-2 h-auto"
+            style={{ color: currentTheme.textColor }}
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* Status Bar */}
-        <Card className="mb-6" style={{ 
-          borderColor: currentTheme.accentColor + '40',
-          backgroundColor: currentTheme.cardColor 
-        }}>
-          <CardContent className="p-4">
+        {/* Status Mobile */}
+        <Card className="mb-4 border-0 bg-black/40 backdrop-blur-sm">
+          <CardContent className="p-3">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-gray-400">Santé</Label>
-                <Progress value={player.health} className="mt-1" />
+                <Label className="text-xs text-gray-400">Santé</Label>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Progress value={player.health} className="flex-1 h-2" />
+                  <span className="text-xs" style={{ color: currentTheme.primaryColor }}>
+                    {player.health}%
+                  </span>
+                </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-400">Énergie</Label>
-                <Progress value={player.energy} className="mt-1" />
+                <Label className="text-xs text-gray-400">Énergie</Label>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Progress value={player.energy} className="flex-1 h-2" />
+                  <span className="text-xs" style={{ color: currentTheme.primaryColor }}>
+                    {player.energy}%
+                  </span>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Main Interface */}
+        {/* Main Interface Mobile */}
         <Tabs defaultValue="stats" className="space-y-4">
           <TabsList 
-            className="grid w-full grid-cols-5"
-            style={{ backgroundColor: currentTheme.cardColor }}
+            className="grid w-full grid-cols-6 h-12 bg-black/50 backdrop-blur-sm border-0"
+            style={{ backgroundColor: currentTheme.cardColor + '80' }}
           >
-            <TabsTrigger value="stats" style={{ color: currentTheme.textColor }}>
-              Statistiques
+            <TabsTrigger value="stats" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <Gauge className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="missions" style={{ color: currentTheme.textColor }}>
-              Missions
+            <TabsTrigger value="missions" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <Target className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="discoveries" style={{ color: currentTheme.textColor }}>
-              Découvertes
+            <TabsTrigger value="discoveries" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <ScrollText className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="artifacts" style={{ color: currentTheme.textColor }}>
-              Artefacts
+            <TabsTrigger value="artifacts" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <Package className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="story" style={{ color: currentTheme.textColor }}>
-              Histoire
+            <TabsTrigger value="story" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <BookOpen className="w-4 h-4" />
+            </TabsTrigger>
+            <TabsTrigger value="optimization" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <Brain className="w-4 h-4" />
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="stats">
-            <Card style={{ 
-              borderColor: currentTheme.accentColor + '40',
-              backgroundColor: currentTheme.cardColor 
-            }}>
-              <CardHeader>
-                <CardTitle style={{ color: currentTheme.primaryColor }}>
-                  Disciplines de Recherche
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {Object.entries(stats).map(([category, data]) => (
-                  <StatCard key={category} category={category} data={data} />
-                ))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="missions">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {missions.map(mission => (
-                <MissionCard key={mission.id} mission={mission} />
-              ))}
+          <TabsContent value="stats" className="space-y-3">
+            <div className="text-center mb-4">
+              <h3 className="text-sm font-medium mb-2" style={{ color: currentTheme.primaryColor }}>
+                Disciplines de Recherche
+              </h3>
             </div>
+            {Object.entries(stats).map(([category, data]) => (
+              <StatCard key={category} category={category} data={data} />
+            ))}
           </TabsContent>
 
-          <TabsContent value="discoveries">
-            <div className="space-y-4">
-              {discoveries.map(discovery => (
-                <Card key={discovery.id} style={{ 
-                  borderColor: currentTheme.accentColor + '40',
-                  backgroundColor: currentTheme.cardColor 
-                }}>
+          <TabsContent value="missions" className="space-y-3">
+            <MissionCreator onCreateMission={addMission} currentTheme={currentTheme} />
+            {missions.length === 0 ? (
+              <Card className="border-0 bg-black/40 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <Target className="w-12 h-12 mx-auto mb-3 opacity-50" 
+                         style={{ color: currentTheme.primaryColor }} />
+                  <p className="text-sm text-gray-400 mb-2">Aucune mission active</p>
+                  <p className="text-xs text-gray-500">Créez votre première mission pour commencer</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {missions.map(mission => (
+                  <MissionCard key={mission.id} mission={mission} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="discoveries" className="space-y-3">
+            {discoveries.length === 0 ? (
+              <Card className="border-0 bg-black/40 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <ScrollText className="w-12 h-12 mx-auto mb-3 opacity-50" 
+                              style={{ color: currentTheme.primaryColor }} />
+                  <p className="text-sm text-gray-400 mb-2">Aucune découverte</p>
+                  <p className="text-xs text-gray-500">Progressez pour débloquer des indices</p>
+                </CardContent>
+              </Card>
+            ) : (
+              discoveries.map(discovery => (
+                <Card key={discovery.id} className="border-0 bg-black/40 backdrop-blur-sm">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-medium" style={{ color: currentTheme.textColor }}>
+                      <h4 className="font-medium text-sm" style={{ color: currentTheme.textColor }}>
                         {discovery.title}
                       </h4>
-                      <div className="flex space-x-2">
+                      <div className="flex space-x-1">
                         {discovery.isNew && (
-                          <Badge style={{ backgroundColor: currentTheme.primaryColor }}>
+                          <Badge className="text-xs px-2 py-0 border-0" 
+                                 style={{ backgroundColor: currentTheme.primaryColor, color: 'black' }}>
                             NOUVEAU
                           </Badge>
                         )}
-                        <Badge variant={
-                          discovery.rarity === 'legendary' ? 'destructive' :
-                          discovery.rarity === 'rare' ? 'secondary' : 'outline'
-                        }>
+                        <Badge variant="outline" className="text-xs px-2 py-0 border-0"
+                               style={{ 
+                                 backgroundColor: discovery.rarity === 'legendary' ? '#ffd700' + '20' :
+                                                 discovery.rarity === 'rare' ? '#ff6b9d' + '20' : '#4ecdc4' + '20',
+                                 color: discovery.rarity === 'legendary' ? '#ffd700' :
+                                        discovery.rarity === 'rare' ? '#ff6b9d' : '#4ecdc4'
+                               }}>
                           {discovery.rarity.toUpperCase()}
                         </Badge>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-400">{discovery.description}</p>
+                    <p className="text-xs text-gray-400">{discovery.description}</p>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              ))
+            )}
           </TabsContent>
 
-          <TabsContent value="artifacts">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {artifacts.map(artifact => (
-                <Card key={artifact.id} style={{ 
-                  borderColor: currentTheme.accentColor + '40',
-                  backgroundColor: currentTheme.cardColor 
-                }}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-medium" style={{ color: currentTheme.textColor }}>
-                        {artifact.name}
-                      </h4>
-                      <Badge variant={
-                        artifact.rarity === 'legendary' ? 'destructive' :
-                        artifact.rarity === 'rare' ? 'secondary' : 'outline'
-                      }>
-                        {artifact.rarity.toUpperCase()}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-400 mb-2">{artifact.description}</p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Package className="w-3 h-3 mr-1" />
-                      {artifact.category}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          <TabsContent value="artifacts" className="space-y-3">
+            {artifacts.length === 0 ? (
+              <Card className="border-0 bg-black/40 backdrop-blur-sm">
+                <CardContent className="p-6 text-center">
+                  <Package className="w-12 h-12 mx-auto mb-3 opacity-50" 
+                           style={{ color: currentTheme.primaryColor }} />
+                  <p className="text-sm text-gray-400 mb-2">Aucun artefact</p>
+                  <p className="text-xs text-gray-500">Terminez des missions pour en trouver</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 gap-3">
+                {artifacts.map(artifact => (
+                  <Card key={artifact.id} className="border-0 bg-black/40 backdrop-blur-sm">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium text-sm" style={{ color: currentTheme.textColor }}>
+                          {artifact.name}
+                        </h4>
+                        <Badge variant="outline" className="text-xs px-2 py-0 border-0"
+                               style={{ 
+                                 backgroundColor: artifact.rarity === 'legendary' ? '#ffd700' + '20' :
+                                                 artifact.rarity === 'rare' ? '#ff6b9d' + '20' : '#4ecdc4' + '20',
+                                 color: artifact.rarity === 'legendary' ? '#ffd700' :
+                                        artifact.rarity === 'rare' ? '#ff6b9d' : '#4ecdc4'
+                               }}>
+                          {artifact.rarity.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-gray-400 mb-2">{artifact.description}</p>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Package className="w-3 h-3 mr-1" />
+                        {artifact.category}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
-          <TabsContent value="story">
-            <Card style={{ 
-              borderColor: currentTheme.accentColor + '40',
-              backgroundColor: currentTheme.cardColor 
-            }}>
-              <CardHeader>
-                <CardTitle style={{ color: currentTheme.primaryColor }}>
+          <TabsContent value="story" className="space-y-3">
+            <Card className="border-0 bg-black/40 backdrop-blur-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base" style={{ color: currentTheme.primaryColor }}>
                   Journal de l'Enquête
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="border-l-4 pl-4" style={{ borderColor: currentTheme.primaryColor }}>
-                    <h3 className="font-medium mb-2" style={{ color: currentTheme.textColor }}>
-                      Niveau {player.level} - L'Annonce
+                    <h3 className="font-medium mb-2 text-sm" style={{ color: currentTheme.textColor }}>
+                      Niveau {player.level} - L'Éveil
                     </h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                      "TRANSMISSION GLOBALE DÉTECTÉE: 'Ceux qui ont pris ma création ont 15 ans pour me trouver. 
-                      Le compte à rebours a commencé. Suivez les indices que j'ai laissés... 
-                      ou acceptez votre destin.' - Dr. Chen"
+                    <p className="text-gray-400 text-xs leading-relaxed">
+                      {player.level === 1 ? 
+                        "Vous vous réveillez dans un monde où quelque chose a changé. Les écrans clignotent partout, les gens semblent anxieux. Un message cryptique apparaît : 'Le compte à rebours a commencé...'" :
+                        "Continuez votre progression pour débloquer plus de fragments de l'histoire du Dr. Chen et du mystérieux Compound-X..."
+                      }
                     </p>
                   </div>
                   
-                  <div className="text-center py-8">
-                    <ScrollText className="w-12 h-12 mx-auto mb-4" style={{ color: currentTheme.accentColor }} />
-                    <p className="text-gray-500">
-                      Continuez à progresser pour débloquer plus de fragments de l'histoire...
+                  <div className="text-center py-6">
+                    <ScrollText className="w-10 h-10 mx-auto mb-3" style={{ color: currentTheme.accentColor }} />
+                    <p className="text-gray-500 text-xs">
+                      Progressez pour débloquer plus de fragments...
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="optimization">
+            <OptimizationTab currentTheme={currentTheme} />
+          </TabsContent>
         </Tabs>
+
+        {/* White Rabbit Signature */}
+        <div className="text-center mt-6 pb-4">
+          <p className="text-xs opacity-50" style={{ color: currentTheme.primaryColor }}>
+            "Je suis le lapin blanc"
+          </p>
+        </div>
       </div>
 
       {/* Settings Dialog */}
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent style={{ backgroundColor: currentTheme.cardColor }}>
+        <DialogContent 
+          className="max-w-sm border-0 bg-black/90 backdrop-blur-sm"
+          style={{ backgroundColor: currentTheme.cardColor + 'ee' }}
+        >
           <DialogHeader>
             <DialogTitle style={{ color: currentTheme.primaryColor }}>
               Paramètres
@@ -426,32 +554,32 @@ const GameInterface = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="playerName" className="text-gray-400">
+              <Label htmlFor="playerName" className="text-gray-400 text-sm">
                 Nom du chercheur
               </Label>
               <Input
                 id="playerName"
                 value={player.name}
                 onChange={(e) => setPlayer(prev => ({ ...prev, name: e.target.value }))}
+                className="mt-1 border-0 bg-black/50 text-sm"
                 style={{ 
-                  backgroundColor: currentTheme.backgroundColor,
-                  borderColor: currentTheme.accentColor,
+                  backgroundColor: currentTheme.backgroundColor + '80',
                   color: currentTheme.textColor 
                 }}
               />
             </div>
             
             <div>
-              <Label className="text-gray-400">Thème</Label>
+              <Label className="text-gray-400 text-sm">Thème</Label>
               <Select
                 value={Object.keys(themes).find(key => themes[key].name === currentTheme.name)}
                 onValueChange={(value) => setCurrentTheme(themes[value])}
               >
-                <SelectTrigger style={{ 
-                  backgroundColor: currentTheme.backgroundColor,
-                  borderColor: currentTheme.accentColor,
-                  color: currentTheme.textColor 
-                }}>
+                <SelectTrigger className="mt-1 border-0 bg-black/50 text-sm"
+                               style={{ 
+                                 backgroundColor: currentTheme.backgroundColor + '80',
+                                 color: currentTheme.textColor 
+                               }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -465,7 +593,7 @@ const GameInterface = () => {
             </div>
 
             <div>
-              <Label htmlFor="customColor" className="text-gray-400">
+              <Label htmlFor="customColor" className="text-gray-400 text-sm">
                 Couleur personnalisée
               </Label>
               <Input
@@ -477,12 +605,50 @@ const GameInterface = () => {
                   primaryColor: e.target.value,
                   textColor: e.target.value
                 }))}
-                className="h-10"
+                className="h-10 mt-1 border-0"
               />
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      <style jsx>{`
+        .matrix-rain {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          pointer-events: none;
+        }
+        
+        .matrix-column {
+          position: absolute;
+          top: -100%;
+          font-family: 'Courier New', monospace;
+          font-size: 12px;
+          color: ${currentTheme.primaryColor};
+          animation: matrix-fall 10s linear infinite;
+        }
+        
+        .matrix-char {
+          display: block;
+          opacity: 0.7;
+        }
+        
+        @keyframes matrix-fall {
+          0% { top: -100%; }
+          100% { top: 100%; }
+        }
+        
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </div>
   );
 };
