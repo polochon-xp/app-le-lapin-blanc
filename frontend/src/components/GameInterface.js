@@ -403,6 +403,7 @@ const GameInterface = () => {
 
           <TabsContent value="missions" className="space-y-3">
             <MissionCreator onCreateMission={addMission} currentTheme={currentTheme} />
+            <DownloadApp currentTheme={currentTheme} />
             {missions.length === 0 ? (
               <Card className="border-0 bg-black/40 backdrop-blur-sm">
                 <CardContent className="p-6 text-center">
