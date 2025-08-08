@@ -420,3 +420,78 @@ export const calculateMissionXP = (category, estimatedTime) => {
   const timeMultiplier = Math.max(1, Math.floor(estimatedTime / 15)); // +1 tous les 15 min
   return (baseXP[category] || 15) * timeMultiplier;
 };
+
+export const getRandomArtifact = () => {
+  const rarityChances = { common: 0.6, rare: 0.3, legendary: 0.1 };
+  const rand = Math.random();
+  let rarity = "common";
+  
+  if (rand > 0.9) rarity = "legendary";
+  else if (rand > 0.6) rarity = "rare";
+  
+  return {
+    id: `a_${Date.now()}`,
+    name: "Fragment mystérieux",
+    description: "Un objet étrange découvert lors de votre progression",
+    rarity,
+    foundAt: new Date().toISOString(),
+    category: "mystery"
+  };
+};
+
+// Système de sauvegarde locale
+export const saveGameData = (gameData) => {
+  try {
+    localStorage.setItem('rpg_game_save', JSON.stringify({
+      ...gameData,
+      savedAt: new Date().toISOString()
+    }));
+    return true;
+  } catch (error) {
+    console.error('Erreur sauvegarde:', error);
+    return false;
+  }
+};
+
+export const loadGameData = () => {
+  try {
+    const saved = localStorage.getItem('rpg_game_save');
+    return saved ? JSON.parse(saved) : null;
+  } catch (error) {
+    console.error('Erreur chargement:', error);
+    return null;
+  }
+};
+
+export const exportGameData = () => {
+  const gameData = loadGameData();
+  if (!gameData) return null;
+  
+  const dataStr = JSON.stringify(gameData, null, 2);
+  const dataBlob = new Blob([dataStr], {type: 'application/json'});
+  
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `rpg_save_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+export const importGameData = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const gameData = JSON.parse(e.target.result);
+        localStorage.setItem('rpg_game_save', JSON.stringify(gameData));
+        resolve(gameData);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    reader.readAsText(file);
+  });
+};
