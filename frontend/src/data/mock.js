@@ -15,11 +15,10 @@ export const mockPlayer = {
 };
 
 export const mockStats = {
-  analyseTech: { level: 0, xp: 0, maxXp: 100 },
-  endurance: { level: 0, xp: 0, maxXp: 100 },
-  innovation: { level: 0, xp: 0, maxXp: 100 },
-  documentation: { level: 0, xp: 0, maxXp: 100 },
-  adaptabilite: { level: 0, xp: 0, maxXp: 100 }
+  travail: { level: 0, xp: 0, maxXp: 100 },
+  sport: { level: 0, xp: 0, maxXp: 100 },
+  creation: { level: 0, xp: 0, maxXp: 100 },
+  lecture: { level: 0, xp: 0, maxXp: 100 }
 };
 
 export const mockDiscoveries = [
