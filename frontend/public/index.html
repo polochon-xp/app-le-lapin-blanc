@@ -32,32 +32,151 @@
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         
-        <!-- PWA Service Worker Registration -->
+        <!-- PWA Service Worker Registration & Mobile Optimization -->
         <script>
-            // Register Service Worker for PWA functionality
+            // Enhanced PWA Service Worker Registration
             if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js')
-                        .then((registration) => {
-                            console.log('✅ [PWA] Service Worker registered successfully:', registration.scope);
-                        })
-                        .catch((error) => {
-                            console.log('❌ [PWA] Service Worker registration failed:', error);
+                window.addEventListener('load', async () => {
+                    try {
+                        const registration = await navigator.serviceWorker.register('/sw.js');
+                        console.log('✅ [PWA] Service Worker enregistré avec succès:', registration.scope);
+                        
+                        // Gestion des mises à jour du Service Worker
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('🔄 [PWA] Nouvelle version disponible');
+                                    // Optionnel: notifier l'utilisateur qu'une mise à jour est disponible
+                                }
+                            });
                         });
+                        
+                    } catch (error) {
+                        console.error('❌ [PWA] Erreur lors de l\'enregistrement du Service Worker:', error);
+                    }
                 });
             }
             
-            // PWA Install Prompt Handling
+            // Enhanced PWA Install Prompt Handling
             let deferredPrompt;
+            let installSource = 'unknown';
+
+            // Détecter le type d'appareil pour l'analytics
+            const detectDevice = () => {
+                const userAgent = navigator.userAgent.toLowerCase();
+                if (/android/.test(userAgent)) return 'android';
+                if (/iphone|ipad|ipod/.test(userAgent)) return 'ios';
+                if (/windows/.test(userAgent)) return 'windows';
+                if (/mac/.test(userAgent)) return 'mac';
+                return 'other';
+            };
+
             window.addEventListener('beforeinstallprompt', (e) => {
                 console.log('🎯 [PWA] beforeinstallprompt event triggered');
+                console.log('📱 [PWA] Appareil détecté:', detectDevice());
+                
                 e.preventDefault();
                 deferredPrompt = e;
+                installSource = 'prompt';
+                
+                // Dispatch un événement personnalisé pour React
+                window.dispatchEvent(new CustomEvent('pwa-install-available', {
+                    detail: { prompt: e, source: installSource }
+                }));
             });
             
-            window.addEventListener('appinstalled', () => {
-                console.log('🎉 [PWA] App installed successfully');
+            // Installation réussie
+            window.addEventListener('appinstalled', (e) => {
+                console.log('🎉 [PWA] Application installée avec succès!');
+                console.log('📊 [PWA] Source d\'installation:', installSource);
+                
                 deferredPrompt = null;
+                installSource = 'installed';
+                
+                // Dispatch événement d'installation réussie
+                window.dispatchEvent(new CustomEvent('pwa-installed', {
+                    detail: { timestamp: Date.now(), device: detectDevice() }
+                }));
+            });
+
+            // Détection du mode standalone (app installée)
+            const isStandalone = () => {
+                return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                       window.navigator.standalone === true;
+            };
+
+            if (isStandalone()) {
+                console.log('📱 [PWA] Application lancée en mode standalone');
+                document.documentElement.classList.add('pwa-standalone');
+                
+                // Optimisations spécifiques au mode standalone
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Masquer la barre d'adresse sur mobile si possible
+                    if (window.screen && window.screen.orientation) {
+                        window.screen.orientation.lock('portrait-primary').catch(() => {
+                            console.log('[PWA] Lock orientation non supporté');
+                        });
+                    }
+                    
+                    // Gérer le swipe-to-refresh sur certains navigateurs
+                    document.body.style.overscrollBehavior = 'none';
+                });
+            }
+
+            // Analytics PWA basique
+            const trackPWAEvent = (action, details = {}) => {
+                console.log(`📊 [PWA Analytics] ${action}:`, details);
+                // Ici vous pourriez envoyer vers Google Analytics, etc.
+            };
+
+            // Track performance
+            window.addEventListener('load', () => {
+                trackPWAEvent('app_loaded', {
+                    timestamp: Date.now(),
+                    isStandalone: isStandalone(),
+                    device: detectDevice(),
+                    online: navigator.onLine
+                });
+            });
+
+            // Track online/offline events
+            window.addEventListener('online', () => {
+                trackPWAEvent('connection_restored', { timestamp: Date.now() });
+            });
+
+            window.addEventListener('offline', () => {
+                trackPWAEvent('connection_lost', { timestamp: Date.now() });
+            });
+
+            // Optimisation de la performance mobile
+            document.addEventListener('DOMContentLoaded', () => {
+                // Préchargement intelligent des ressources critiques
+                const criticalResources = ['/manifest.json'];
+                
+                criticalResources.forEach(resource => {
+                    const link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.href = resource;
+                    document.head.appendChild(link);
+                });
+
+                // Touch optimizations pour mobile
+                if ('ontouchstart' in window) {
+                    document.body.classList.add('touch-device');
+                    
+                    // Améliorer la réactivité des touches
+                    document.addEventListener('touchstart', function(){}, {passive: true});
+                }
+
+                // Optimisation mémoire : nettoyer les anciens caches si nécessaire
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        if (names.length > 5) { // Si trop de caches
+                            console.log('[PWA] Nettoyage des anciens caches...');
+                        }
+                    });
+                }
             });
         </script>
         <!--
