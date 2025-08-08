@@ -266,7 +266,7 @@ export const themes = {
   },
 };
 
-// Techniques d'apprentissage pour l'onglet optimisation
+// Techniques d'apprentissage complètes - Toutes les méthodes intégrées
 export const learningTechniques = [
   {
     id: "anki",
@@ -335,6 +335,29 @@ export const learningTechniques = [
       "Préparer tout le matériel avant de commencer",
       "Utiliser la pause pour faire des étirements",
       "Noter les distractions sans les suivre"
+    ]
+  },
+  {
+    id: "mindmap",
+    name: "MIND MAPPING DIGITAL",
+    description: "Cartographie mentale pour structurer et connecter les connaissances",
+    category: "Compréhension",
+    need: "Compréhension profonde",
+    speed: "Rapide (1-4h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#b19cd9",
+    instructions: [
+      "Placer le sujet principal au centre",
+      "Créer des branches pour les concepts majeurs",
+      "Ajouter des sous-branches pour les détails",
+      "Utiliser couleurs et icônes pour catégoriser",
+      "Connecter les concepts liés par des flèches"
+    ],
+    tips: [
+      "Utiliser des mots-clés plutôt que des phrases",
+      "Intégrer des images et symboles visuels",
+      "Réviser et réorganiser régulièrement",
+      "Créer des mind maps collaboratives pour projets groupe"
     ]
   }
 ];
