@@ -359,6 +359,443 @@ export const learningTechniques = [
       "Réviser et réorganiser régulièrement",
       "Créer des mind maps collaboratives pour projets groupe"
     ]
+  },
+  {
+    id: "activerecall",
+    name: "ACTIVE RECALL MATRIX",
+    description: "Tests auto-générés pour renforcer la récupération active",
+    category: "Révision",
+    need: "Rétention long terme",
+    speed: "Moyen (4-8h)",
+    volume: "Grand (>200 infos)",
+    color: "#ffcc5c",
+    instructions: [
+      "Créer questions après chaque section étudiée",
+      "Fermer les notes et répondre de mémoire",
+      "Vérifier et corriger les réponses",
+      "Marquer les questions échouées pour révision",
+      "Répéter le processus avec intervalles croissants"
+    ],
+    tips: [
+      "Varier les types de questions (QCM, ouvertes, schémas)",
+      "Créer des questions prédictives sur les examens",
+      "Utiliser des outils comme Quizlet ou Anki",
+      "Pratiquer la récupération dans différents contextes"
+    ]
+  },
+  {
+    id: "chunking",
+    name: "CHUNKING ALGORITHM",
+    description: "Découpage intelligent de l'information en unités mémorisables",
+    category: "Mémorisation",
+    need: "Acquisition rapide",
+    speed: "Rapide (1-4h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#96ceb4",
+    instructions: [
+      "Identifier les unités naturelles d'information",
+      "Regrouper 5-9 éléments maximum par chunk",
+      "Créer des liens logiques entre les chunks",
+      "Pratiquer la récupération chunk par chunk",
+      "Assembler progressivement les chunks ensemble"
+    ],
+    tips: [
+      "Utiliser des acronymes pour mémoriser les chunks",
+      "Créer des histoires reliant les différents chunks",
+      "Visualiser les chunks sous forme de blocs colorés",
+      "Pratiquer l'ordre et le désordre des chunks"
+    ]
+  },
+  {
+    id: "interleaving",
+    name: "INTERLEAVING PRACTICE",
+    description: "Alternance de sujets pour améliorer la discrimination et transfert",
+    category: "Application",
+    need: "Application pratique",
+    speed: "Lent (> 8h)",
+    volume: "Grand (>200 infos)",
+    color: "#85a3e0",
+    instructions: [
+      "Identifier 3-4 sujets/compétences liés",
+      "Étudier chaque sujet 15-20 minutes",
+      "Changer de sujet sans finir complètement",
+      "Revenir au premier sujet après rotation",
+      "Mélanger l'ordre des sujets à chaque session"
+    ],
+    tips: [
+      "Choisir des sujets avec des similarités et différences",
+      "Noter les confusions pour les clarifier",
+      "Varier les types d'exercices pour chaque sujet",
+      "Utiliser des minuteurs pour forcer les transitions"
+    ]
+  },
+  {
+    id: "dualcoding",
+    name: "DUAL CODING THEORY",
+    description: "Combinaison visuel-verbal pour optimiser l'encodage mnésique",
+    category: "Mémorisation",
+    need: "Rétention long terme",
+    speed: "Rapide (1-4h)",
+    volume: "Petit (10-50 infos)",
+    color: "#ff9a9e",
+    instructions: [
+      "Lire l'information textuelle à voix haute",
+      "Créer une représentation visuelle (schéma, image)",
+      "Associer chaque élément visuel à sa description verbale",
+      "Pratiquer la récupération par les deux canaux",
+      "Créer des liens entre représentations visuelles et verbales"
+    ],
+    tips: [
+      "Utiliser des couleurs différentes pour chaque concept",
+      "Créer des symboles personnels récurrents",
+      "Associer des gestes aux concepts abstraits",
+      "Utiliser la méthode des loci pour spatialiser"
+    ]
+  },
+  {
+    id: "metacognitive",
+    name: "METACOGNITIVE MONITORING",
+    description: "Surveillance et ajustement des stratégies d'apprentissage",
+    category: "Révision",
+    need: "Compréhension profonde",
+    speed: "Moyen (4-8h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#8fcaca",
+    instructions: [
+      "Évaluer sa compréhension avant, pendant et après",
+      "Identifier les stratégies qui fonctionnent le mieux",
+      "Ajuster les méthodes selon les résultats obtenus",
+      "Tenir un journal d'apprentissage détaillé",
+      "Planifier les prochaines sessions basées sur l'analyse"
+    ],
+    tips: [
+      "Utiliser des échelles de confiance (1-10) pour s'auto-évaluer",
+      "Programmer des auto-tests surprises",
+      "Analyser les erreurs pour identifier les patterns",
+      "Expérimenter avec différentes techniques chaque semaine"
+    ]
+  },
+  {
+    id: "elaborative",
+    name: "ELABORATIVE INTERROGATION",
+    description: "Questionnement approfondi pour créer des liens causaux",
+    category: "Compréhension",
+    need: "Compréhension profonde",
+    speed: "Moyen (4-8h)",
+    volume: "Petit (10-50 infos)",
+    color: "#ffecd2",
+    instructions: [
+      "Lire une information factuelle",
+      "Se demander 'Pourquoi cela est-il vrai ?'",
+      "Générer des explications causales détaillées",
+      "Rechercher des preuves supportant l'explication",
+      "Connecter avec des connaissances préexistantes"
+    ],
+    tips: [
+      "Utiliser des questions ouvertes plutôt que fermées",
+      "Chercher des contre-exemples pour tester la compréhension",
+      "Créer des chaînes causales complexes",
+      "Discuter les explications avec d'autres personnes"
+    ]
+  },
+  {
+    id: "sketchnoting",
+    name: "SKETCHNOTING VISUAL",
+    description: "Prise de notes visuelles combinant texte, dessins et symboles",
+    category: "Créativité",
+    need: "Synthèse créative",
+    speed: "Rapide (1-4h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#ff9a9e",
+    instructions: [
+      "Utiliser 50% texte, 30% dessins, 20% symboles/flèches",
+      "Créer une hiérarchie visuelle avec tailles et couleurs",
+      "Dessiner en temps réel pendant l'écoute/lecture",
+      "Utiliser des conteneurs (bulles, cadres) pour grouper",
+      "Ajouter des connecteurs visuels entre les concepts"
+    ],
+    tips: [
+      "Développer son propre vocabulaire de symboles récurrents",
+      "Utiliser maximum 3-4 couleurs pour éviter la surcharge",
+      "S'entraîner à dessiner vite sans chercher la perfection",
+      "Prendre photos des sketchnotes pour révision digitale"
+    ]
+  },
+  {
+    id: "tchart",
+    name: "FICHE T-CHART",
+    description: "Fiches comparative à deux colonnes pour opposition/comparaison",
+    category: "Mémorisation",
+    need: "Compréhension profonde",
+    speed: "Rapide (1-4h)",
+    volume: "Petit (10-50 infos)",
+    color: "#96ceb4",
+    instructions: [
+      "Tracer une ligne verticale au centre de la fiche",
+      "Titre/sujet en haut, deux aspects à comparer en colonnes",
+      "Lister points similaires à la même hauteur",
+      "Marquer les différences majeures en couleur",
+      "Synthèse au bas : conclusion comparative"
+    ],
+    tips: [
+      "Utiliser pour avantages/inconvénients, avant/après, théorie/pratique",
+      "Ajouter des flèches pour montrer les relations cause-effet",
+      "Créer des sous-T charts pour approfondir certains points",
+      "Réviser en cachant une colonne pour tester l'autre"
+    ]
+  },
+  {
+    id: "loci",
+    name: "METHODE LOCI MODERNE",
+    description: "Palais de mémoire adapté aux environnements numériques familiers",
+    category: "Mémorisation",
+    need: "Rétention long terme",
+    speed: "Moyen (4-8h)",
+    volume: "Grand (>200 infos)",
+    color: "#ffd93d",
+    instructions: [
+      "Choisir un lieu très familier (maison, trajet quotidien)",
+      "Définir un parcours logique avec 10-20 points fixes",
+      "Associer chaque information à un point spécifique",
+      "Créer des images mentales absurdes/mémorables",
+      "Parcourir mentalement le trajet pour réviser"
+    ],
+    tips: [
+      "Utiliser des lieux virtuels (jeux vidéo, films) si plus mémorables",
+      "Créer plusieurs palais pour différentes matières",
+      "Dessiner le plan du palais pour référence visuelle",
+      "Pratiquer le parcours à l'envers pour renforcer"
+    ]
+  },
+  {
+    id: "rubberduck",
+    name: "RUBBER DUCK DEBUGGING",
+    description: "Explication à voix haute à un objet pour clarifier sa pensée",
+    category: "Compréhension",
+    need: "Compréhension profonde",
+    speed: "Ultra-rapide (< 1h)",
+    volume: "Micro (<10 infos)",
+    color: "#fffa65",
+    instructions: [
+      "Choisir un objet inanimé comme 'auditeur'",
+      "Expliquer le problème/concept du début à la fin",
+      "Détailler chaque étape comme à un débutant",
+      "Identifier les moments d'hésitation ou confusion",
+      "Reformuler jusqu'à explication fluide et claire"
+    ],
+    tips: [
+      "Utiliser un vrai canard en plastique pour l'aspect ludique",
+      "Enregistrer ses explications pour les réécouter",
+      "Changer d'objet selon l'humeur pour maintenir l'engagement",
+      "Utiliser cette méthode avant de demander de l'aide"
+    ]
+  },
+  {
+    id: "dale_reading",
+    name: "DALE: READING + AUDIOBOOKS",
+    description: "Lecture passive optimisée (10% rétention selon Edgar Dale)",
+    category: "Edgar Dale",
+    need: "Acquisition rapide",
+    speed: "Moyen (4-8h)",
+    volume: "Grand (>200 infos)",
+    color: "#ff9999",
+    instructions: [
+      "Combiner lecture visuelle + écoute audio simultanée",
+      "Ajuster vitesse audio à 1.2x pour maintenir attention",
+      "Prendre notes des concepts-clés uniquement",
+      "Faire pauses toutes les 20 minutes pour intégration",
+      "Réviser notes dans les 2h suivant la lecture"
+    ],
+    tips: [
+      "Alterner entre lecture pure et écoute pure",
+      "Utiliser surligneur digital pour traçabilité",
+      "Créer playlist de chapitres pour révision ciblée",
+      "Combiner avec marche lente pour améliorer rétention"
+    ]
+  },
+  {
+    id: "dale_seeing",
+    name: "DALE: SEEING + HEARING",
+    description: "Démonstrations visuelles et auditives (20% rétention)",
+    category: "Edgar Dale",
+    need: "Compréhension profonde",
+    speed: "Rapide (1-4h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#ffcc99",
+    instructions: [
+      "Rechercher vidéos de qualité sur le sujet (YouTube, Coursera)",
+      "Visionner une fois en mode 'découverte' sans notes",
+      "Deuxième visionnage avec prise de notes active",
+      "Reproduire les schémas/démonstrations montrés",
+      "Créer sa propre présentation basée sur la démonstration"
+    ],
+    tips: [
+      "Privilégier vidéos avec sous-titres pour double encodage",
+      "Utiliser fonction ralenti pour détails complexes",
+      "Chercher multiple perspectives sur même concept",
+      "Pratiquer pause-résumé toutes les 5 minutes"
+    ]
+  },
+  {
+    id: "dale_discussion",
+    name: "DALE: PARTICIPATING IN DISCUSSION",
+    description: "Apprentissage par échange et débat (50% rétention)",
+    category: "Edgar Dale",
+    need: "Compréhension profonde",
+    speed: "Moyen (4-8h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#ffff99",
+    instructions: [
+      "Rejoindre forums/Discord spécialisés dans la matière",
+      "Poser questions ouvertes pour stimuler discussion",
+      "Partager ses propres perspectives et expériences",
+      "Débattre respectueusement sur points controversés",
+      "Synthétiser apprentissages de chaque session"
+    ],
+    tips: [
+      "Préparer 3-5 questions avant chaque discussion",
+      "Utiliser technique Socratique pour approfondir",
+      "Noter les perspectives différentes des siennes",
+      "Organiser groupes d'étude réguliers avec pairs"
+    ]
+  },
+  {
+    id: "dale_talk",
+    name: "DALE: GIVING A TALK",
+    description: "Présentation orale pour consolidation (70% rétention)",
+    category: "Edgar Dale",
+    need: "Application pratique",
+    speed: "Lent (> 8h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#ccff99",
+    instructions: [
+      "Structurer présentation : intro, 3 points principaux, conclusion",
+      "Créer supports visuels simples et impactants",
+      "Répéter à voix haute minimum 5 fois avant présentation",
+      "Présenter à audience réelle (amis, famille, collègues)",
+      "Collecter feedback et ajuster pour futures présentations"
+    ],
+    tips: [
+      "Commencer par présentations courtes (5-10 min)",
+      "Utiliser storytelling pour rendre mémorable",
+      "Anticiper questions difficiles et préparer réponses",
+      "Filmer ses présentations pour auto-amélioration"
+    ]
+  },
+  {
+    id: "dale_dramatic",
+    name: "DALE: DOING A DRAMATIC PRESENTATION",
+    description: "Performance théâtrale pour ancrage émotionnel (70% rétention)",
+    category: "Edgar Dale",
+    need: "Synthèse créative",
+    speed: "Lent (> 8h)",
+    volume: "Petit (10-50 infos)",
+    color: "#cc99ff",
+    instructions: [
+      "Transformer le contenu en scénario avec personnages",
+      "Incarner différents rôles pour explorer multiples perspectives",
+      "Utiliser costumes/accessoires pour immersion totale",
+      "Jouer devant audience pour feedback émotionnel",
+      "Enregistrer la performance pour révision ludique"
+    ],
+    tips: [
+      "Exagérer émotions et gestes pour ancrage mémoriel",
+      "Utiliser conflits dramatiques pour concepts opposés",
+      "Intégrer humour pour détendre et mémoriser",
+      "Créer versions courtes (sketch 3-5 min) pour révision"
+    ]
+  },
+  {
+    id: "dale_simulating",
+    name: "DALE: SIMULATING THE REAL EXPERIENCE",
+    description: "Simulation pratique en conditions réelles (90% rétention)",
+    category: "Edgar Dale",
+    need: "Application pratique",
+    speed: "Lent (> 8h)",
+    volume: "Petit (10-50 infos)",
+    color: "#99ff99",
+    instructions: [
+      "Identifier contexte d'application réel du savoir",
+      "Recréer conditions les plus proches possible du réel",
+      "Pratiquer avec contraintes temporelles et matérielles réelles",
+      "Introduire éléments perturbateurs/stress comme en réalité",
+      "Débriefing après chaque simulation pour amélioration"
+    ],
+    tips: [
+      "Utiliser réalité virtuelle/augmentée si disponible",
+      "Créer check-lists de performance comme professionnels",
+      "Varier les scénarios pour robustesse de l'apprentissage",
+      "Mesurer progression avec métriques objectives"
+    ]
+  },
+  {
+    id: "dale_real",
+    name: "DALE: DOING THE REAL THING",
+    description: "Application directe en situation authentique (90% rétention)",
+    category: "Edgar Dale",
+    need: "Application pratique",
+    speed: "Lent (> 8h)",
+    volume: "Micro (<10 infos)",
+    color: "#66ff66",
+    instructions: [
+      "Trouver opportunités réelles d'appliquer le savoir",
+      "Commencer par tâches simples avec supervision",
+      "Progresser vers autonomie complète par étapes",
+      "Documenter succès et échecs pour apprentissage continu",
+      "Chercher feedback de professionnels expérimentés"
+    ],
+    tips: [
+      "Accepter échecs comme partie normale de l'apprentissage",
+      "Tenir journal de pratique avec réflexions quotidiennes",
+      "Chercher mentorship pour accélération apprentissage",
+      "Célébrer petites victoires pour maintenir motivation"
+    ]
+  },
+  {
+    id: "spacing_advanced",
+    name: "SPACING EFFECT ADVANCED",
+    description: "Algorithme d'espacement personnalisé basé sur performance",
+    category: "Révision",
+    need: "Rétention long terme",
+    speed: "Lent (> 8h)",
+    volume: "Grand (>200 infos)",
+    color: "#99ccff",
+    instructions: [
+      "Évaluer difficulté initiale de chaque élément (1-5)",
+      "Programmer première révision selon difficulté (1j-1sem)",
+      "Ajuster intervalle selon performance : succès = +50%, échec = -70%",
+      "Maintenir ratio 80% succès pour optimisation",
+      "Analyser patterns personnels pour affiner algorithme"
+    ],
+    tips: [
+      "Utiliser apps comme Anki avec algorithmes SM-15/17",
+      "Garder sessions courtes (15-20 min) pour éviter fatigue",
+      "Réviser même cartes 'faciles' pour maintenance",
+      "Exporter statistiques pour analyse performance long terme"
+    ]
+  },
+  {
+    id: "elaborative_integration",
+    name: "ELABORATIVE INTEGRATION",
+    description: "Connexion systématique entre nouveaux et anciens savoirs",
+    category: "Compréhension",
+    need: "Compréhension profonde",
+    speed: "Moyen (4-8h)",
+    volume: "Moyen (50-200 infos)",
+    color: "#ff9966",
+    instructions: [
+      "Pour chaque nouveau concept, identifier 3 liens avec acquis",
+      "Créer carte mentale montrant ces connexions",
+      "Chercher contradictions/tensions entre ancien et nouveau",
+      "Résoudre conflits par recherche approfondie",
+      "Créer synthèse intégrée du savoir élargi"
+    ],
+    tips: [
+      "Utiliser technique 'Prior Knowledge Activation' avant apprentissage",
+      "Créer analogies ponts entre domaines différents",
+      "Tenir 'journal de connexions' pour tracer liens découverts",
+      "Utiliser diagrammes Venn pour visualiser recoupements"
+    ]
   }
 ];
 
