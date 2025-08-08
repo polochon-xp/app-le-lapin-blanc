@@ -46,15 +46,69 @@ import {
 } from '../data/mock';
 
 const GameInterface = () => {
-  const [player, setPlayer] = useState(mockPlayer);
-  const [stats, setStats] = useState(mockStats);
-  const [missions, setMissions] = useState(mockMissions);
-  const [discoveries, setDiscoveries] = useState(mockDiscoveries);
-  const [artifacts, setArtifacts] = useState(mockArtifacts);
+  // Initialisation avec données sauvegardées ou par défaut
+  const initializeGameState = () => {
+    try {
+      const savedPlayer = localStorage.getItem('lapinBlanc_player');
+      const savedStats = localStorage.getItem('lapinBlanc_stats');
+      const savedMissions = localStorage.getItem('lapinBlanc_missions');
+      const savedDiscoveries = localStorage.getItem('lapinBlanc_discoveries');
+      const savedArtifacts = localStorage.getItem('lapinBlanc_artifacts');
+      const savedTheme = localStorage.getItem('lapinBlanc_theme');
+      
+      return {
+        player: savedPlayer ? JSON.parse(savedPlayer) : mockPlayer,
+        stats: savedStats ? JSON.parse(savedStats) : mockStats,
+        missions: savedMissions ? JSON.parse(savedMissions) : mockMissions,
+        discoveries: savedDiscoveries ? JSON.parse(savedDiscoveries) : mockDiscoveries,
+        artifacts: savedArtifacts ? JSON.parse(savedArtifacts) : mockArtifacts,
+        theme: savedTheme ? JSON.parse(savedTheme) : themes.retro
+      };
+    } catch (error) {
+      console.log('Erreur lors du chargement des données sauvegardées:', error);
+      return {
+        player: mockPlayer,
+        stats: mockStats,
+        missions: mockMissions,
+        discoveries: mockDiscoveries,
+        artifacts: mockArtifacts,
+        theme: themes.retro
+      };
+    }
+  };
+
+  const gameState = initializeGameState();
+  
+  const [player, setPlayer] = useState(gameState.player);
+  const [stats, setStats] = useState(gameState.stats);
+  const [missions, setMissions] = useState(gameState.missions);
+  const [discoveries, setDiscoveries] = useState(gameState.discoveries);
+  const [artifacts, setArtifacts] = useState(gameState.artifacts);
   const [activeTimer, setActiveTimer] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState(themes.retro);
+  const [currentTheme, setCurrentTheme] = useState(gameState.theme);
+
+  // Fonction de sauvegarde automatique
+  const saveGameState = () => {
+    try {
+      localStorage.setItem('lapinBlanc_player', JSON.stringify(player));
+      localStorage.setItem('lapinBlanc_stats', JSON.stringify(stats));
+      localStorage.setItem('lapinBlanc_missions', JSON.stringify(missions));
+      localStorage.setItem('lapinBlanc_discoveries', JSON.stringify(discoveries));
+      localStorage.setItem('lapinBlanc_artifacts', JSON.stringify(artifacts));
+      localStorage.setItem('lapinBlanc_theme', JSON.stringify(currentTheme));
+      localStorage.setItem('lapinBlanc_lastSave', new Date().toISOString());
+      console.log('🎮 Données sauvegardées automatiquement');
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
+  };
+
+  // Sauvegarde automatique à chaque changement d'état
+  useEffect(() => {
+    saveGameState();
+  }, [player, stats, missions, discoveries, artifacts, currentTheme]);
 
   // Timer functionality
   useEffect(() => {
