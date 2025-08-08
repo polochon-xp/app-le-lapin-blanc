@@ -37,8 +37,8 @@ export const mockDiscoveries = [
 export const mockMissions = [
   {
     id: "test_1",
-    title: "Mission sans timer",
-    description: "Test d'une mission avec seulement bouton Fini",
+    title: "Mission simple",
+    description: "Seulement bouton Fini",
     category: "travail",
     hasTimer: false,
     xpReward: 35,
@@ -50,10 +50,10 @@ export const mockMissions = [
   {
     id: "test_2", 
     title: "Mission avec timer",
-    description: "Test d'une mission avec timer + bouton Fini",
+    description: "Timer + bouton Fini",
     category: "sport",
     hasTimer: true,
-    estimatedTime: 25,
+    estimatedTime: 20,
     xpReward: 40,
     status: "pending", 
     progress: 0,
