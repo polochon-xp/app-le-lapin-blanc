@@ -32,7 +32,6 @@ import {
 import MissionCreator from './MissionCreator';
 import OptimizationTab from './OptimizationTab';
 import DownloadApp from './DownloadApp';
-import PWAInstallPrompt from './PWAInstallPrompt';
 import { 
   mockPlayer, 
   mockStats, 
