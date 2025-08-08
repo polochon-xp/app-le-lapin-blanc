@@ -385,20 +385,15 @@ export const unlockContentForLevel = (level) => {
   return storyData;
 };
 
-export const getRandomArtifact = () => {
-  const rarityChances = { common: 0.6, rare: 0.3, legendary: 0.1 };
-  const rand = Math.random();
-  let rarity = "common";
-  
-  if (rand > 0.9) rarity = "legendary";
-  else if (rand > 0.6) rarity = "rare";
-  
-  return {
-    id: `a_${Date.now()}`,
-    name: "Fragment mystérieux",
-    description: "Un objet étrange découvert lors de votre progression",
-    rarity,
-    foundAt: new Date().toISOString(),
-    category: "mystery"
+export const calculateMissionXP = (category, estimatedTime) => {
+  // Calcul automatique des XP basé sur la catégorie et le temps
+  const baseXP = {
+    travail: 15,
+    sport: 12,
+    creation: 20,
+    lecture: 18
   };
+  
+  const timeMultiplier = Math.max(1, Math.floor(estimatedTime / 15)); // +1 tous les 15 min
+  return (baseXP[category] || 15) * timeMultiplier;
 };
