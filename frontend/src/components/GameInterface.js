@@ -281,7 +281,7 @@ const GameInterface = () => {
                 {formatTime(timeLeft)}
               </div>
               <p className="text-gray-400 mb-6 text-sm">
-                  >>> Suis le lapin blanc <<<
+                  Suis le lapin blanc
               </p>
               <Button 
                 variant="outline"
