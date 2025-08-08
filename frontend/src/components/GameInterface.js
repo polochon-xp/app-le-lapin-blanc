@@ -128,13 +128,22 @@ const GameInterface = () => {
 
   const getStatIcon = (category) => {
     const icons = {
-      analyseTech: Brain,
-      endurance: Dumbbell,
-      innovation: Lightbulb,
-      documentation: BookOpen,
-      adaptabilite: Zap
+      travail: Briefcase,
+      sport: Dumbbell,
+      creation: Lightbulb,
+      lecture: BookOpen
     };
-    return icons[category] || Brain;
+    return icons[category] || Briefcase;
+  };
+
+  const getStatName = (category) => {
+    const names = {
+      travail: 'Travail',
+      sport: 'Sport', 
+      creation: 'Création',
+      lecture: 'Lecture'
+    };
+    return names[category] || category;
   };
 
   const StatCard = ({ category, data }) => {
