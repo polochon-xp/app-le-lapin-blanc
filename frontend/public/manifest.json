@@ -10,6 +10,7 @@
   "categories": ["education", "games", "productivity"],
   "lang": "fr",
   "scope": "/",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "pwa-icon-192.png",
@@ -34,10 +35,14 @@
     },
     {
       "name": "Optimisation",
-      "short_name": "Optimisation",
+      "short_name": "Techniques",
       "description": "Techniques d'apprentissage cognitive",
       "url": "/?tab=optimization", 
       "icons": [{ "src": "pwa-icon-192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "display_override": ["standalone", "minimal-ui"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
