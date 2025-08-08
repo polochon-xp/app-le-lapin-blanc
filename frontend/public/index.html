@@ -1,24 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="description" content="A product of emergent.sh" />
-        <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-        <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-        <title>Emergent | Fullstack App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <meta name="theme-color" content="#ff6b35" />
+        <meta name="description" content="Le Lapin Blanc - Application RPG d'apprentissage et d'optimisation cognitive" />
+        
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+        
+        <!-- PWA Icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="%PUBLIC_URL%/pwa-icon-192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="%PUBLIC_URL%/pwa-icon-512.png" />
+        <link rel="apple-touch-icon" href="%PUBLIC_URL%/pwa-icon-192.png" />
+        
+        <!-- PWA Meta Tags -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Le Lapin Blanc" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        
+        <!-- Social Media Meta Tags -->
+        <meta property="og:title" content="Le Lapin Blanc - RPG d'Apprentissage" />
+        <meta property="og:description" content="Application de gamification pour optimiser votre apprentissage avec des techniques cognitives avancées" />
+        <meta property="og:image" content="%PUBLIC_URL%/pwa-icon-512.png" />
+        <meta property="og:type" content="website" />
+        
+        <title>Le Lapin Blanc - RPG d'Apprentissage</title>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
