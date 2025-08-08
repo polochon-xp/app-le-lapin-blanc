@@ -10,11 +10,10 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { 
   User, 
-  Brain, 
+  Briefcase, 
   Dumbbell, 
   Lightbulb, 
   BookOpen, 
-  Zap, 
   Clock, 
   Settings, 
   Play,
@@ -24,7 +23,10 @@ import {
   ScrollText,
   Plus,
   Target,
-  Gauge
+  Gauge,
+  Download,
+  Upload,
+  Save
 } from 'lucide-react';
 import MissionCreator from './MissionCreator';
 import OptimizationTab from './OptimizationTab';
