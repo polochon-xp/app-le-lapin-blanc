@@ -256,22 +256,14 @@ export const themes = {
     textColor: "#00ff41",
     accentColor: "#238636"
   },
-  laboratory: {
-    name: "Laboratoire",
-    primaryColor: "#3b82f6",
-    backgroundColor: "#111827",
-    cardColor: "#1f2937",
-    textColor: "#3b82f6",
-    accentColor: "#60a5fa"
+  retro: {
+    name: "Retro Gaming",
+    primaryColor: "#ff6b35",
+    backgroundColor: "#1a0d00",
+    cardColor: "#2d1a00",
+    textColor: "#ff6b35",
+    accentColor: "#ffaa00"
   },
-  danger: {
-    name: "Zone de Danger",
-    primaryColor: "#ef4444",
-    backgroundColor: "#1c1917",
-    cardColor: "#292524",
-    textColor: "#ef4444",
-    accentColor: "#f87171"
-  }
 };
 
 // Techniques d'apprentissage pour l'onglet optimisation
