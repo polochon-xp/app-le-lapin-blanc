@@ -9,8 +9,10 @@ import { Card, CardContent } from './ui/card';
 import { Checkbox } from './ui/checkbox';
 import { Calendar, CalendarDays, Clock, Plus, Target, Briefcase, Dumbbell, Lightbulb, BookOpen, Timer, CheckCircle } from 'lucide-react';
 
-const MissionCreator = ({ onCreateMission, currentTheme }) => {
+const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCategory }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryData, setNewCategoryData] = useState({ name: '', icon: '📋', color: '#ff6b35' });
   const [mission, setMission] = useState({
     title: '',
     description: '',
