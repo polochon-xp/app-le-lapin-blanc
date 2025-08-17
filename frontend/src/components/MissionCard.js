@@ -19,8 +19,16 @@ const MissionCard = ({ mission, currentTheme, categories, onClick }) => {
   const getRecurrenceText = (mission) => {
     switch (mission.type) {
       case 'daily': return 'Quotidien';
-      case 'weekly': return `Hebdo (${mission.weekDay})`;
-      case 'once': return mission.specificDate ? new Date(mission.specificDate).toLocaleDateString('fr-FR') : 'Une fois';
+      case 'weekly': return `Hebdo (${mission.weekDay || 'Non défini'})`;
+      case 'once': 
+        if (mission.specificDate) {
+          try {
+            return new Date(mission.specificDate).toLocaleDateString('fr-FR');
+          } catch (e) {
+            return 'Une fois';
+          }
+        }
+        return 'Une fois';
       default: return 'Une fois';
     }
   };
