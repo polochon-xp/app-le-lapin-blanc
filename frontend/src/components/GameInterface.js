@@ -31,6 +31,9 @@ import {
 } from 'lucide-react';
 import MissionCreator from './MissionCreator';
 import OptimizationTab from './OptimizationTab';
+import MissionCard from './MissionCard';
+import MissionDetailModal from './MissionDetailModal';
+import CalendarPanel from './CalendarPanel';
 import { 
   mockPlayer, 
   mockStats, 
