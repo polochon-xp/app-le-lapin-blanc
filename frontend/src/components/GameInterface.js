@@ -170,8 +170,13 @@ const GameInterface = () => {
           const targetDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
           return mission.weekDay === targetDay;
         case 'once':
-          const missionDate = new Date(mission.specificDate);
-          return missionDate.toDateString() === dateString;
+          if (!mission.specificDate) return false;
+          try {
+            const missionDate = new Date(mission.specificDate);
+            return missionDate.toDateString() === dateString;
+          } catch (e) {
+            return false;
+          }
         default:
           return true;
       }
