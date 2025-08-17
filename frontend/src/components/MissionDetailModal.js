@@ -32,10 +32,16 @@ const MissionDetailModal = ({
   const getRecurrenceText = (mission) => {
     switch (mission.type) {
       case 'daily': return 'Quotidien';
-      case 'weekly': return `Hebdomadaire (${mission.weekDay})`;
-      case 'once': return mission.specificDate ? 
-        `Date spécifique: ${new Date(mission.specificDate).toLocaleDateString('fr-FR')}` : 
-        'Une seule fois';
+      case 'weekly': return `Hebdomadaire (${mission.weekDay || 'Non défini'})`;
+      case 'once': 
+        if (mission.specificDate) {
+          try {
+            return `Date spécifique: ${new Date(mission.specificDate).toLocaleDateString('fr-FR')}`;
+          } catch (e) {
+            return 'Une seule fois';
+          }
+        }
+        return 'Une seule fois';
       default: return 'Une fois';
     }
   };
