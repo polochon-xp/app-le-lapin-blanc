@@ -4,6 +4,11 @@ import { Badge } from './ui/badge';
 import { Clock, Target, Briefcase, Dumbbell, Lightbulb, BookOpen } from 'lucide-react';
 
 const MissionCard = ({ mission, currentTheme, categories, onClick }) => {
+  // Vérifications de sécurité
+  if (!mission || !currentTheme || !categories || !onClick) {
+    return null;
+  }
+
   const category = categories.find(cat => cat.id === mission.category);
   
   const getCategoryIcon = (categoryId) => {
