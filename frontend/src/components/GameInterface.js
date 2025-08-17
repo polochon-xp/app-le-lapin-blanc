@@ -559,6 +559,31 @@ const GameInterface = () => {
     setMissions(prev => [...prev, newMission]);
   };
 
+  // Démarrer une mission avec timer
+  const startMissionTimer = (mission) => {
+    if (mission.hasTimer && mission.estimatedTime) {
+      setActiveTimer(mission);
+      setTimeLeft(mission.estimatedTime * 60); // convertir en secondes
+    }
+  };
+
+  // Marquer une mission comme terminée
+  const completeMission = (missionId) => {
+    const mission = missions.find(m => m.id === missionId);
+    if (!mission) return;
+
+    // Ajouter XP à la stat correspondante
+    if (mission.category && mission.xpReward) {
+      addXPToStat(stats, setStats, mission.category, mission.xpReward);
+    }
+
+    // Mettre à jour les missions (pour les missions quotidiennes/hebdo, on ne les supprime pas)
+    if (mission.type === 'once') {
+      setMissions(prev => prev.filter(m => m.id !== missionId));
+    }
+    // Pour les missions récurrentes, on garde la mission pour les prochains jours
+  };
+
   return (
     <div 
       className="min-h-screen p-3 relative overflow-hidden"
