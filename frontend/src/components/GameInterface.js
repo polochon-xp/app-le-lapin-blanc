@@ -706,25 +706,222 @@ const GameInterface = () => {
             ))}
           </TabsContent>
 
-          <TabsContent value="missions" className="space-y-3">
-            <MissionCreator onCreateMission={addMission} currentTheme={currentTheme} />
-            <DownloadApp currentTheme={currentTheme} />
-            {missions.length === 0 ? (
-              <Card className="border-0 bg-black/40 backdrop-blur-sm">
-                <CardContent className="p-6 text-center">
-                  <Target className="w-12 h-12 mx-auto mb-3 opacity-50" 
-                         style={{ color: currentTheme.primaryColor }} />
-                  <p className="text-sm text-gray-400 mb-2">Aucune mission active</p>
-                  <p className="text-xs text-gray-500">Créez votre première mission pour commencer</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-3">
-                {missions.map(mission => (
-                  <MissionCard key={mission.id} mission={mission} />
-                ))}
-              </div>
+          <TabsContent value="missions" className="space-y-3 relative">
+            {/* Bouton calendrier flottant */}
+            <div className="relative">
+              <Button
+                className="fixed bottom-20 right-4 z-40 rounded-full w-14 h-14 shadow-lg border-2"
+                style={{
+                  backgroundColor: currentTheme.primaryColor,
+                  color: currentTheme.backgroundColor,
+                  borderColor: currentTheme.accentColor
+                }}
+                onClick={() => setShowCalendar(!showCalendar)}
+              >
+                📅
+              </Button>
+              
+              {showCalendar && <MiniCalendar />}
+            </div>
+
+            {/* Header avec date sélectionnée */}
+            <Card className="border-0 bg-black/40 backdrop-blur-sm">
+              <CardContent className="p-3">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-bold text-sm" style={{ color: currentTheme.textColor }}>
+                      Missions du {selectedDate.toLocaleDateString('fr-FR', { 
+                        weekday: 'long', 
+                        day: 'numeric', 
+                        month: 'long' 
+                      })}
+                    </h3>
+                    <p className="text-xs text-gray-400">
+                      {getMissionsForDate(selectedDate).length} mission(s) prévue(s)
+                    </p>
+                  </div>
+                  <Badge
+                    className="text-xs px-2 py-1"
+                    style={{
+                      backgroundColor: selectedDate.toDateString() === new Date().toDateString() 
+                        ? currentTheme.primaryColor 
+                        : currentTheme.accentColor,
+                      color: currentTheme.backgroundColor
+                    }}
+                  >
+                    {selectedDate.toDateString() === new Date().toDateString() 
+                      ? "Aujourd'hui" 
+                      : "Planifié"}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Créateur de mission */}
+            <MissionCreator 
+              onCreateMission={addMission} 
+              currentTheme={currentTheme}
+              categories={categories}
+              onAddCategory={addCategory}
+            />
+
+            {/* Liste des missions filtrées */}
+            <div className="space-y-3">
+              {getMissionsForDate(selectedDate).map(mission => (
+                <MissionCard 
+                  key={mission.id} 
+                  mission={mission} 
+                  date={selectedDate}
+                />
+              ))}
+              
+              {getMissionsForDate(selectedDate).length === 0 && (
+                <Card className="border-0 bg-black/40 backdrop-blur-sm">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-4xl mb-3">🎯</div>
+                    <h3 className="font-bold mb-2" style={{ color: currentTheme.textColor }}>
+                      Aucune mission programmée
+                    </h3>
+                    <p className="text-xs text-gray-400">
+                      Créez une nouvelle mission pour cette date
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Modal détail mission */}
+            {selectedMission && (
+              <Dialog open={!!selectedMission} onOpenChange={() => setSelectedMission(null)}>
+                <DialogContent 
+                  className="max-w-sm border-0 bg-black/95 backdrop-blur-sm"
+                  style={{ backgroundColor: currentTheme.cardColor + 'ee' }}
+                >
+                  <DialogHeader>
+                    <DialogTitle 
+                      className="text-base flex items-center space-x-2"
+                      style={{ color: currentTheme.primaryColor }}
+                    >
+                      <span className="text-lg">
+                        {categories.find(cat => cat.id === selectedMission.category)?.icon || '📋'}
+                      </span>
+                      <span>{selectedMission.title}</span>
+                    </DialogTitle>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4">
+                    {/* Détails de la mission */}
+                    <div className="space-y-3">
+                      <div 
+                        className="p-3 rounded-lg"
+                        style={{ backgroundColor: currentTheme.primaryColor + '10' }}
+                      >
+                        <h4 className="font-bold text-sm mb-2" style={{ color: currentTheme.primaryColor }}>
+                          Description
+                        </h4>
+                        <p className="text-sm" style={{ color: currentTheme.textColor }}>
+                          {selectedMission.description || "Aucune description fournie."}
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        <div 
+                          className="p-3 rounded-lg text-center"
+                          style={{ backgroundColor: currentTheme.accentColor + '10' }}
+                        >
+                          <div className="text-lg font-bold" style={{ color: currentTheme.accentColor }}>
+                            +{selectedMission.xpReward}
+                          </div>
+                          <div className="text-xs text-gray-400">XP Récompense</div>
+                        </div>
+                        
+                        <div 
+                          className="p-3 rounded-lg text-center"
+                          style={{ backgroundColor: currentTheme.secondaryColor + '10' }}
+                        >
+                          <div className="text-lg font-bold" style={{ color: currentTheme.secondaryColor }}>
+                            {selectedMission.type === 'daily' ? '📅' :
+                             selectedMission.type === 'weekly' ? '📆' : '📌'}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {selectedMission.type === 'daily' ? 'Quotidien' :
+                             selectedMission.type === 'weekly' ? 'Hebdomadaire' : 'Une fois'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {selectedMission.hasTimer && (
+                        <div 
+                          className="p-3 rounded-lg text-center"
+                          style={{ backgroundColor: currentTheme.borderColor + '10' }}
+                        >
+                          <div className="text-sm font-bold" style={{ color: currentTheme.borderColor }}>
+                            ⏱️ Timer: {selectedMission.estimatedTime} minutes
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            Mode focus avec minuteur intégré
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Boutons d'action */}
+                    {selectedDate.toDateString() === new Date().toDateString() && 
+                     selectedMission.status === 'pending' && (
+                      <div className="flex space-x-2">
+                        {selectedMission.hasTimer && (
+                          <Button 
+                            onClick={() => {
+                              startMission(selectedMission);
+                              setSelectedMission(null);
+                            }}
+                            disabled={!!activeTimer}
+                            className="flex-1 text-sm h-9"
+                            style={{
+                              backgroundColor: currentTheme.secondaryColor,
+                              color: currentTheme.backgroundColor
+                            }}
+                          >
+                            <Play className="w-4 h-4 mr-1" />
+                            Démarrer Timer
+                          </Button>
+                        )}
+                        
+                        <Button 
+                          onClick={() => {
+                            handleMissionComplete(selectedMission.id);
+                            setSelectedMission(null);
+                          }}
+                          className={`${selectedMission.hasTimer ? 'flex-1' : 'w-full'} text-sm h-9`}
+                          style={{
+                            backgroundColor: currentTheme.primaryColor,
+                            color: currentTheme.backgroundColor
+                          }}
+                        >
+                          <Target className="w-4 h-4 mr-1" />
+                          Marquer comme terminé
+                        </Button>
+                      </div>
+                    )}
+                    
+                    <Button 
+                      onClick={() => setSelectedMission(null)}
+                      variant="outline"
+                      className="w-full text-sm h-9 border-0"
+                      style={{
+                        borderColor: currentTheme.accentColor,
+                        color: currentTheme.textColor,
+                        backgroundColor: 'transparent'
+                      }}
+                    >
+                      Fermer
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             )}
+
+            <DownloadApp currentTheme={currentTheme} />
           </TabsContent>
 
           <TabsContent value="discoveries" className="space-y-3">
