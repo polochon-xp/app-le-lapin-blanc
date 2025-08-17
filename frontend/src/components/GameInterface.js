@@ -559,19 +559,6 @@ const GameInterface = () => {
     setMissions(prev => [...prev, newMission]);
   };
 
-  // Ajouter une nouvelle catégorie personnalisée
-  const addCategory = (name, icon, color) => {
-    const newCategory = {
-      id: `custom_${Date.now()}`,
-      name,
-      icon,
-      color,
-      stat: 'Compétence Personnalisée'
-    };
-    setCategories(prev => [...prev, newCategory]);
-    return newCategory;
-  };
-
   // Filtrer les missions pour une date donnée
   const getMissionsForDate = (date) => {
     return missions.filter(mission => {
