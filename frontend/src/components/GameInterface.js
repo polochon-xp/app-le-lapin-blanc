@@ -55,6 +55,8 @@ const GameInterface = () => {
       const savedDiscoveries = localStorage.getItem('lapinBlanc_discoveries');
       const savedArtifacts = localStorage.getItem('lapinBlanc_artifacts');
       const savedTheme = localStorage.getItem('lapinBlanc_theme');
+      const savedCategories = localStorage.getItem('lapinBlanc_categories');
+      const savedSelectedDate = localStorage.getItem('lapinBlanc_selectedDate');
       
       return {
         player: savedPlayer ? JSON.parse(savedPlayer) : mockPlayer,
@@ -62,7 +64,14 @@ const GameInterface = () => {
         missions: savedMissions ? JSON.parse(savedMissions) : mockMissions,
         discoveries: savedDiscoveries ? JSON.parse(savedDiscoveries) : mockDiscoveries,
         artifacts: savedArtifacts ? JSON.parse(savedArtifacts) : mockArtifacts,
-        theme: savedTheme ? JSON.parse(savedTheme) : themes.retro
+        theme: savedTheme ? JSON.parse(savedTheme) : themes.bright,
+        categories: savedCategories ? JSON.parse(savedCategories) : [
+          { id: 'travail', name: 'Travail', stat: 'Analyse Technologique', icon: '💼', color: '#ff6b35' },
+          { id: 'sport', name: 'Sport', stat: 'Endurance Physique', icon: '💪', color: '#4ade80' },
+          { id: 'creation', name: 'Création', stat: 'Innovation Créative', icon: '💡', color: '#fbbf24' },
+          { id: 'lecture', name: 'Lecture', stat: 'Adaptabilité', icon: '📚', color: '#06b6d4' }
+        ],
+        selectedDate: savedSelectedDate ? new Date(JSON.parse(savedSelectedDate)) : new Date()
       };
     } catch (error) {
       console.log('Erreur lors du chargement des données sauvegardées:', error);
@@ -72,7 +81,14 @@ const GameInterface = () => {
         missions: mockMissions,
         discoveries: mockDiscoveries,
         artifacts: mockArtifacts,
-        theme: themes.retro
+        theme: themes.bright,
+        categories: [
+          { id: 'travail', name: 'Travail', stat: 'Analyse Technologique', icon: '💼', color: '#ff6b35' },
+          { id: 'sport', name: 'Sport', stat: 'Endurance Physique', icon: '💪', color: '#4ade80' },
+          { id: 'creation', name: 'Création', stat: 'Innovation Créative', icon: '💡', color: '#fbbf24' },
+          { id: 'lecture', name: 'Lecture', stat: 'Adaptabilité', icon: '📚', color: '#06b6d4' }
+        ],
+        selectedDate: new Date()
       };
     }
   };
@@ -84,6 +100,10 @@ const GameInterface = () => {
   const [missions, setMissions] = useState(gameState.missions);
   const [discoveries, setDiscoveries] = useState(gameState.discoveries);
   const [artifacts, setArtifacts] = useState(gameState.artifacts);
+  const [categories, setCategories] = useState(gameState.categories);
+  const [selectedDate, setSelectedDate] = useState(gameState.selectedDate);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedMission, setSelectedMission] = useState(null);
   const [activeTimer, setActiveTimer] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
@@ -98,6 +118,8 @@ const GameInterface = () => {
       localStorage.setItem('lapinBlanc_discoveries', JSON.stringify(discoveries));
       localStorage.setItem('lapinBlanc_artifacts', JSON.stringify(artifacts));
       localStorage.setItem('lapinBlanc_theme', JSON.stringify(currentTheme));
+      localStorage.setItem('lapinBlanc_categories', JSON.stringify(categories));
+      localStorage.setItem('lapinBlanc_selectedDate', JSON.stringify(selectedDate));
       localStorage.setItem('lapinBlanc_lastSave', new Date().toISOString());
       console.log('🎮 Données sauvegardées automatiquement');
     } catch (error) {
@@ -108,7 +130,64 @@ const GameInterface = () => {
   // Sauvegarde automatique à chaque changement d'état
   useEffect(() => {
     saveGameState();
-  }, [player, stats, missions, discoveries, artifacts, currentTheme]);
+  }, [player, stats, missions, discoveries, artifacts, currentTheme, categories, selectedDate]);
+
+  // Nettoyage automatique des missions expirées
+  useEffect(() => {
+    const cleanupMissions = () => {
+      const today = new Date();
+      const todayString = today.toDateString();
+      
+      setMissions(prevMissions => {
+        return prevMissions.filter(mission => {
+          if (mission.status === 'completed') {
+            const missionDate = new Date(mission.completedDate || mission.deadline);
+            return missionDate.toDateString() === todayString;
+          }
+          return true;
+        });
+      });
+    };
+
+    // Nettoyage au chargement et toutes les heures
+    cleanupMissions();
+    const interval = setInterval(cleanupMissions, 60 * 60 * 1000); // 1 heure
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fonction pour filtrer les missions par date
+  const getMissionsForDate = (date) => {
+    const dateString = date.toDateString();
+    const dayOfWeek = date.getDay(); // 0 = dimanche, 1 = lundi, etc.
+    
+    return missions.filter(mission => {
+      switch (mission.type) {
+        case 'daily':
+          return true; // Missions quotidiennes s'affichent tous les jours
+        case 'weekly':
+          const targetDay = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayOfWeek];
+          return mission.weekDay === targetDay;
+        case 'once':
+          const missionDate = new Date(mission.specificDate);
+          return missionDate.toDateString() === dateString;
+        default:
+          return true;
+      }
+    });
+  };
+
+  // Fonction pour créer une nouvelle catégorie
+  const addCategory = (name, icon, color) => {
+    const newCategory = {
+      id: name.toLowerCase().replace(/\s+/g, '_'),
+      name,
+      stat: name,
+      icon,
+      color
+    };
+    setCategories(prev => [...prev, newCategory]);
+    return newCategory;
+  };
 
   // Timer functionality
   useEffect(() => {
