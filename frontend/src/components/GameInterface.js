@@ -710,21 +710,17 @@ const GameInterface = () => {
 
           <TabsContent value="missions" className="space-y-3 relative">
             {/* Bouton calendrier flottant */}
-            <div className="relative">
-              <Button
-                className="fixed bottom-20 right-4 z-40 rounded-full w-14 h-14 shadow-lg border-2"
-                style={{
-                  backgroundColor: currentTheme.primaryColor,
-                  color: currentTheme.backgroundColor,
-                  borderColor: currentTheme.accentColor
-                }}
-                onClick={() => setShowCalendar(!showCalendar)}
-              >
-                📅
-              </Button>
-              
-              {showCalendar && <MiniCalendar />}
-            </div>
+            <Button
+              className="fixed bottom-20 right-4 z-40 rounded-full w-14 h-14 shadow-lg border-2"
+              style={{
+                backgroundColor: currentTheme.primaryColor,
+                color: currentTheme.backgroundColor,
+                borderColor: currentTheme.accentColor
+              }}
+              onClick={() => setShowCalendar(true)}
+            >
+              📅
+            </Button>
 
             {/* Header avec date sélectionnée */}
             <Card className="border-0 bg-black/40 backdrop-blur-sm">
@@ -767,13 +763,15 @@ const GameInterface = () => {
               onAddCategory={addCategory}
             />
 
-            {/* Liste des missions filtrées */}
-            <div className="space-y-3">
+            {/* Liste des missions sous forme de cards */}
+            <div className="space-y-2">
               {getMissionsForDate(selectedDate).map(mission => (
                 <MissionCard 
                   key={mission.id} 
                   mission={mission} 
-                  date={selectedDate}
+                  currentTheme={currentTheme}
+                  categories={categories}
+                  onClick={setSelectedMission}
                 />
               ))}
               
@@ -791,137 +789,6 @@ const GameInterface = () => {
                 </Card>
               )}
             </div>
-
-            {/* Modal détail mission */}
-            {selectedMission && (
-              <Dialog open={!!selectedMission} onOpenChange={() => setSelectedMission(null)}>
-                <DialogContent 
-                  className="max-w-sm border-0 bg-black/95 backdrop-blur-sm"
-                  style={{ backgroundColor: currentTheme.cardColor + 'ee' }}
-                >
-                  <DialogHeader>
-                    <DialogTitle 
-                      className="text-base flex items-center space-x-2"
-                      style={{ color: currentTheme.primaryColor }}
-                    >
-                      <span className="text-lg">
-                        {categories.find(cat => cat.id === selectedMission.category)?.icon || '📋'}
-                      </span>
-                      <span>{selectedMission.title}</span>
-                    </DialogTitle>
-                  </DialogHeader>
-                  
-                  <div className="space-y-4">
-                    {/* Détails de la mission */}
-                    <div className="space-y-3">
-                      <div 
-                        className="p-3 rounded-lg"
-                        style={{ backgroundColor: currentTheme.primaryColor + '10' }}
-                      >
-                        <h4 className="font-bold text-sm mb-2" style={{ color: currentTheme.primaryColor }}>
-                          Description
-                        </h4>
-                        <p className="text-sm" style={{ color: currentTheme.textColor }}>
-                          {selectedMission.description || "Aucune description fournie."}
-                        </p>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-3">
-                        <div 
-                          className="p-3 rounded-lg text-center"
-                          style={{ backgroundColor: currentTheme.accentColor + '10' }}
-                        >
-                          <div className="text-lg font-bold" style={{ color: currentTheme.accentColor }}>
-                            +{selectedMission.xpReward}
-                          </div>
-                          <div className="text-xs text-gray-400">XP Récompense</div>
-                        </div>
-                        
-                        <div 
-                          className="p-3 rounded-lg text-center"
-                          style={{ backgroundColor: currentTheme.secondaryColor + '10' }}
-                        >
-                          <div className="text-lg font-bold" style={{ color: currentTheme.secondaryColor }}>
-                            {selectedMission.type === 'daily' ? '📅' :
-                             selectedMission.type === 'weekly' ? '📆' : '📌'}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {selectedMission.type === 'daily' ? 'Quotidien' :
-                             selectedMission.type === 'weekly' ? 'Hebdomadaire' : 'Une fois'}
-                          </div>
-                        </div>
-                      </div>
-
-                      {selectedMission.hasTimer && (
-                        <div 
-                          className="p-3 rounded-lg text-center"
-                          style={{ backgroundColor: currentTheme.borderColor + '10' }}
-                        >
-                          <div className="text-sm font-bold" style={{ color: currentTheme.borderColor }}>
-                            ⏱️ Timer: {selectedMission.estimatedTime} minutes
-                          </div>
-                          <div className="text-xs text-gray-400 mt-1">
-                            Mode focus avec minuteur intégré
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Boutons d'action */}
-                    {selectedDate.toDateString() === new Date().toDateString() && 
-                     selectedMission.status === 'pending' && (
-                      <div className="flex space-x-2">
-                        {selectedMission.hasTimer && (
-                          <Button 
-                            onClick={() => {
-                              startMission(selectedMission);
-                              setSelectedMission(null);
-                            }}
-                            disabled={!!activeTimer}
-                            className="flex-1 text-sm h-9"
-                            style={{
-                              backgroundColor: currentTheme.secondaryColor,
-                              color: currentTheme.backgroundColor
-                            }}
-                          >
-                            <Play className="w-4 h-4 mr-1" />
-                            Démarrer Timer
-                          </Button>
-                        )}
-                        
-                        <Button 
-                          onClick={() => {
-                            handleMissionComplete(selectedMission.id);
-                            setSelectedMission(null);
-                          }}
-                          className={`${selectedMission.hasTimer ? 'flex-1' : 'w-full'} text-sm h-9`}
-                          style={{
-                            backgroundColor: currentTheme.primaryColor,
-                            color: currentTheme.backgroundColor
-                          }}
-                        >
-                          <Target className="w-4 h-4 mr-1" />
-                          Marquer comme terminé
-                        </Button>
-                      </div>
-                    )}
-                    
-                    <Button 
-                      onClick={() => setSelectedMission(null)}
-                      variant="outline"
-                      className="w-full text-sm h-9 border-0"
-                      style={{
-                        borderColor: currentTheme.accentColor,
-                        color: currentTheme.textColor,
-                        backgroundColor: 'transparent'
-                      }}
-                    >
-                      Fermer
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
           </TabsContent>
 
           <TabsContent value="discoveries" className="space-y-3">
