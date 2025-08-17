@@ -178,30 +178,39 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
 
           {/* Catégorie */}
           <div>
-            <Label className="text-xs text-gray-400">
-              Catégorie
-            </Label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
+            <div className="flex justify-between items-center mb-2">
+              <Label className="text-xs text-gray-400">Catégorie</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowNewCategory(true)}
+                className="text-xs h-auto p-1"
+                style={{ color: currentTheme.accentColor }}
+              >
+                + Nouvelle
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
               {categories.map(cat => {
-                const Icon = cat.icon;
-                const isSelected = mission.category === cat.value;
+                const isSelected = mission.category === cat.id;
                 return (
                   <Card 
-                    key={cat.value}
+                    key={cat.id}
                     className={`cursor-pointer transition-all border-0 ${
-                      isSelected ? 'ring-1' : ''
+                      isSelected ? 'ring-2' : ''
                     }`}
                     style={{ 
                       backgroundColor: isSelected ? cat.color + '30' : currentTheme.backgroundColor + '80',
                       ringColor: cat.color
                     }}
-                    onClick={() => setMission(prev => ({ ...prev, category: cat.value }))}
+                    onClick={() => setMission(prev => ({ ...prev, category: cat.id }))}
                   >
                     <CardContent className="p-3">
                       <div className="flex items-center space-x-2 mb-1">
-                        <Icon className="w-4 h-4" style={{ color: cat.color }} />
+                        <span className="text-lg">{cat.icon}</span>
                         <span className="text-xs font-medium" style={{ color: currentTheme.textColor }}>
-                          {cat.label}
+                          {cat.name}
                         </span>
                       </div>
                       <p className="text-xs text-gray-400">
@@ -212,6 +221,91 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
                 );
               })}
             </div>
+
+            {/* Dialog pour créer nouvelle catégorie */}
+            {showNewCategory && (
+              <Dialog open={showNewCategory} onOpenChange={setShowNewCategory}>
+                <DialogContent 
+                  className="max-w-xs border-0 bg-black/95 backdrop-blur-sm"
+                  style={{ backgroundColor: currentTheme.cardColor + 'ee' }}
+                >
+                  <DialogHeader>
+                    <DialogTitle style={{ color: currentTheme.primaryColor }}>
+                      Nouvelle Catégorie
+                    </DialogTitle>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-xs text-gray-400">Nom</Label>
+                      <Input
+                        value={newCategoryData.name}
+                        onChange={(e) => setNewCategoryData(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Ex: Cuisine"
+                        className="mt-1 border-0 bg-black/50 text-sm h-9"
+                        style={{
+                          backgroundColor: currentTheme.backgroundColor + '80',
+                          color: currentTheme.textColor
+                        }}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-xs text-gray-400">Icône</Label>
+                      <Input
+                        value={newCategoryData.icon}
+                        onChange={(e) => setNewCategoryData(prev => ({ ...prev, icon: e.target.value }))}
+                        placeholder="🍳"
+                        className="mt-1 border-0 bg-black/50 text-sm h-9"
+                        style={{
+                          backgroundColor: currentTheme.backgroundColor + '80',
+                          color: currentTheme.textColor
+                        }}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label className="text-xs text-gray-400">Couleur</Label>
+                      <div className="flex space-x-2 mt-1">
+                        {['#ff6b35', '#4ade80', '#fbbf24', '#06b6d4', '#a855f7', '#ef4444'].map(color => (
+                          <div
+                            key={color}
+                            className={`w-8 h-8 rounded-full cursor-pointer border-2 ${
+                              newCategoryData.color === color ? 'ring-2 ring-white' : ''
+                            }`}
+                            style={{ backgroundColor: color }}
+                            onClick={() => setNewCategoryData(prev => ({ ...prev, color }))}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <Button 
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setShowNewCategory(false)}
+                        className="flex-1 h-9 text-xs"
+                        style={{ color: currentTheme.textColor }}
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        type="button"
+                        onClick={handleCreateCategory}
+                        className="flex-1 h-9 text-xs"
+                        style={{
+                          backgroundColor: currentTheme.primaryColor,
+                          color: currentTheme.backgroundColor
+                        }}
+                      >
+                        Créer
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
 
           {/* Timer optionnel */}
