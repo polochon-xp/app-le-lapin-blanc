@@ -24,20 +24,30 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
     specificDate: ''
   });
 
-  // Nouvelles catégories selon vos spécifications
-  const categories = [
-    { value: 'travail', label: 'Travail', stat: 'Analyse Technologique', icon: Briefcase, color: currentTheme.primaryColor },
-    { value: 'sport', label: 'Sport', stat: 'Endurance Physique', icon: Dumbbell, color: '#4ade80' },
-    { value: 'creation', label: 'Création', stat: 'Innovation Créative', icon: Lightbulb, color: '#fbbf24' },
-    { value: 'lecture', label: 'Lecture', stat: 'Adaptabilité', icon: BookOpen, color: '#06b6d4' }
-  ];
-
   const weekDays = [
     { value: 'monday', label: 'Lundi' },
     { value: 'tuesday', label: 'Mardi' },
     { value: 'wednesday', label: 'Mercredi' },
     { value: 'thursday', label: 'Jeudi' },
     { value: 'friday', label: 'Vendredi' },
+    { value: 'saturday', label: 'Samedi' },
+    { value: 'sunday', label: 'Dimanche' }
+  ];
+
+  // Fonction pour créer une nouvelle catégorie
+  const handleCreateCategory = () => {
+    if (!newCategoryData.name) return;
+    
+    const newCategory = onAddCategory(
+      newCategoryData.name,
+      newCategoryData.icon,
+      newCategoryData.color
+    );
+    
+    setMission(prev => ({ ...prev, category: newCategory.id }));
+    setShowNewCategory(false);
+    setNewCategoryData({ name: '', icon: '📋', color: '#ff6b35' });
+  };
     { value: 'saturday', label: 'Samedi' },
     { value: 'sunday', label: 'Dimanche' }
   ];
