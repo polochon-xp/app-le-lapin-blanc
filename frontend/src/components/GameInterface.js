@@ -226,15 +226,42 @@ const GameInterface = () => {
 
     setMissions(newMissions);
 
-    // Ajouter XP
+    // Ajouter XP selon la catégorie
     const category = categories.find(cat => cat.id === mission.category);
     if (category) {
-      const newStats = addXPToStat(stats, mission.category, mission.xpReward);
-      setStats(newStats);
+      const updatedStat = addXPToStat(mission.category, mission.xpReward);
+      setStats(prev => ({
+        ...prev,
+        [mission.category]: updatedStat
+      }));
       
-      // Mise à jour du joueur
-      const newPlayer = updatePlayerFromStats(newStats);
-      setPlayer(newPlayer);
+      // Update player level and check for unlocks
+      const newTotalXP = player.totalXP + mission.xpReward;
+      const newLevel = Math.floor(newTotalXP / 100) + 1;
+      
+      setPlayer(prev => ({
+        ...prev,
+        totalXP: newTotalXP,
+        level: newLevel,
+        xpToNextLevel: 100 - (newTotalXP % 100)
+      }));
+      
+      // Check for level-based unlocks
+      if (newLevel > player.level) {
+        const unlockedContent = unlockContentForLevel(newLevel);
+        if (unlockedContent.discoveries) {
+          setDiscoveries(prev => [...prev, ...unlockedContent.discoveries]);
+        }
+        if (unlockedContent.artifacts) {
+          setArtifacts(prev => [...prev, ...unlockedContent.artifacts]);
+        }
+      }
+      
+      // Chance of finding artifact
+      if (Math.random() < 0.3) {
+        const newArtifact = getRandomArtifact();
+        setArtifacts(prev => [...prev, newArtifact]);
+      }
     }
 
     // Arrêter le timer si actif
