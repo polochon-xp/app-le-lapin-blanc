@@ -48,9 +48,6 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
     setShowNewCategory(false);
     setNewCategoryData({ name: '', icon: '📋', color: '#ff6b35' });
   };
-    { value: 'saturday', label: 'Samedi' },
-    { value: 'sunday', label: 'Dimanche' }
-  ];
 
   // Fonction pour calculer automatiquement l'XP selon la catégorie et le temps
   const calculateXP = (category, estimatedTime, hasTimer) => {
