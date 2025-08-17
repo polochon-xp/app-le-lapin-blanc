@@ -38,12 +38,12 @@ import {
   mockMissions, 
   mockDiscoveries, 
   mockArtifacts, 
-  themes, 
   updateMissionProgress, 
   addXPToStat,
   unlockContentForLevel,
   getRandomArtifact
 } from '../data/mock';
+import { themes } from '../data/themes';
 
 const GameInterface = () => {
   // Initialisation avec données sauvegardées ou par défaut
