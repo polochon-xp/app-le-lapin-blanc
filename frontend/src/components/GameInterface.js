@@ -559,52 +559,6 @@ const GameInterface = () => {
     setMissions(prev => [...prev, newMission]);
   };
 
-  // Filtrer les missions pour une date donnée
-  const getMissionsForDate = (date) => {
-    return missions.filter(mission => {
-      if (mission.type === 'daily') return true;
-      
-      if (mission.type === 'weekly') {
-        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        return dayNames[date.getDay()] === mission.weekDay;
-      }
-      
-      if (mission.type === 'once' && mission.specificDate) {
-        const missionDate = new Date(mission.specificDate);
-        return missionDate.toDateString() === date.toDateString();
-      }
-      
-      return false;
-    });
-  };
-
-  // Marquer une mission comme terminée
-  const completeMission = (missionId) => {
-    const mission = missions.find(m => m.id === missionId);
-    if (!mission) return;
-
-    // Ajouter XP à la stat correspondante
-    if (mission.category && mission.xpReward) {
-      addXPToStat(stats, setStats, mission.category, mission.xpReward);
-    }
-
-    // Mettre à jour les missions (pour les missions quotidiennes/hebdo, on ne les supprime pas)
-    if (mission.type === 'once') {
-      setMissions(prev => prev.filter(m => m.id !== missionId));
-    } else {
-      // Pour les missions récurrentes, on pourrait ajouter un système de marquage de completion
-      // Ici on ajoute simplement l'XP sans supprimer la mission
-    }
-  };
-
-  // Démarrer une mission avec timer
-  const startMissionTimer = (mission) => {
-    if (mission.hasTimer && mission.estimatedTime) {
-      setActiveTimer(mission);
-      setTimeLeft(mission.estimatedTime * 60); // convertir en secondes
-    }
-  };
-
   return (
     <div 
       className="min-h-screen p-3 relative overflow-hidden"
