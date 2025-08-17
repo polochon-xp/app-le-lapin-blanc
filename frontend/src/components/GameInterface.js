@@ -919,8 +919,6 @@ const GameInterface = () => {
                 </DialogContent>
               </Dialog>
             )}
-
-            <DownloadApp currentTheme={currentTheme} />
           </TabsContent>
 
           <TabsContent value="discoveries" className="space-y-3">
