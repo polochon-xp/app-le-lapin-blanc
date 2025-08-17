@@ -31,7 +31,6 @@ import {
 } from 'lucide-react';
 import MissionCreator from './MissionCreator';
 import OptimizationTab from './OptimizationTab';
-import DownloadApp from './DownloadApp';
 import { 
   mockPlayer, 
   mockStats, 
