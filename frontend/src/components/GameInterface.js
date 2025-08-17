@@ -311,104 +311,228 @@ const GameInterface = () => {
     );
   };
 
-  const MissionCard = ({ mission }) => {
+  // Composant Mission Card amélioré
+  const MissionCard = ({ mission, date }) => {
     const isActive = activeTimer === mission.id;
     const canStart = mission.status === 'pending' && !activeTimer;
     const canFinish = mission.status === 'pending' && !isActive;
+    const category = categories.find(cat => cat.id === mission.category) || categories[0];
+    const isToday = date.toDateString() === new Date().toDateString();
+    const isCompleted = mission.status === 'completed' && 
+                       mission.completedDate && 
+                       new Date(mission.completedDate).toDateString() === date.toDateString();
     
     return (
-      <Card className="border-0 bg-black/50 backdrop-blur-sm" 
-            style={{ backgroundColor: currentTheme.cardColor + 'aa' }}>
+      <Card 
+        className={`border-0 backdrop-blur-sm cursor-pointer transition-all hover:scale-105 ${
+          isCompleted ? 'opacity-70' : ''
+        }`}
+        style={{ 
+          backgroundColor: category.color + '20',
+          border: `2px solid ${category.color}40`,
+          textDecoration: isCompleted ? 'line-through' : 'none'
+        }}
+        onClick={() => setSelectedMission(mission)}
+      >
         <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-3">
-            <h4 className="font-medium text-sm" style={{ color: currentTheme.textColor }}>
-              {mission.title}
-            </h4>
-            <Badge 
-              variant="outline" 
-              className="text-xs border-0"
-              style={{ 
-                backgroundColor: currentTheme.primaryColor + '20',
-                color: currentTheme.primaryColor 
-              }}
-            >
-              {mission.type === 'daily' ? 'Quotidien' :
-               mission.type === 'weekly' ? 'Hebdo' : 'Unique'}
-            </Badge>
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex items-center space-x-2">
+              <span className="text-lg">{category.icon}</span>
+              <h4 className="font-bold text-sm" style={{ color: currentTheme.textColor }}>
+                {mission.title}
+              </h4>
+            </div>
+            <div className="flex flex-col items-end space-y-1">
+              <Badge 
+                className="text-xs px-2 py-0 border-0"
+                style={{ 
+                  backgroundColor: category.color,
+                  color: currentTheme.backgroundColor
+                }}
+              >
+                {category.name}
+              </Badge>
+              <span className="text-xs font-bold" style={{ color: currentTheme.primaryColor }}>
+                +{mission.xpReward} XP
+              </span>
+            </div>
           </div>
           
-          <p className="text-xs text-gray-400 mb-3 line-clamp-2">{mission.description}</p>
-          
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs flex items-center" style={{ color: currentTheme.primaryColor }}>
-              <Target className="w-3 h-3 mr-1" />
-              +{mission.xpReward} XP
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-xs" style={{ color: currentTheme.textColor }}>
+              {mission.type === 'daily' ? '📅 Quotidien' :
+               mission.type === 'weekly' ? '📆 Hebdomadaire' : '📌 Une fois'}
             </span>
             {mission.hasTimer && (
-              <span className="text-xs text-gray-400 flex items-center">
-                <Clock className="w-3 h-3 mr-1" />
-                {mission.estimatedTime}min
+              <span className="text-xs" style={{ color: currentTheme.accentColor }}>
+                ⏱️ {mission.estimatedTime}min
               </span>
             )}
           </div>
           
           {mission.progress > 0 && (
-            <Progress value={mission.progress} className="mb-3 h-1" />
+            <Progress value={mission.progress} className="mb-3 h-2" />
           )}
           
-          <div className="flex space-x-2">
-            {/* Bouton Timer (si la mission a un timer) */}
-            {mission.hasTimer && (
+          {isToday && !isCompleted && (
+            <div className="flex space-x-2">
+              {mission.hasTimer && (
+                <Button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startMission(mission);
+                  }}
+                  disabled={!canStart}
+                  className="flex-1 text-xs h-8"
+                  style={{
+                    backgroundColor: isActive ? currentTheme.accentColor : currentTheme.secondaryColor,
+                    color: currentTheme.backgroundColor,
+                    border: 'none'
+                  }}
+                >
+                  {isActive ? (
+                    <span className="flex items-center">
+                      <Pause className="w-3 h-3 mr-1" />
+                      {formatTime(timeLeft)}
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Play className="w-3 h-3 mr-1" />
+                      Timer
+                    </span>
+                  )}
+                </Button>
+              )}
+              
               <Button 
-                onClick={() => startMission(mission)}
-                disabled={!canStart}
-                className="flex-1 text-xs h-8"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMissionComplete(mission.id);
+                }}
+                disabled={!canFinish}
+                className={`${mission.hasTimer ? 'flex-1' : 'w-full'} text-xs h-8`}
                 style={{
-                  backgroundColor: isActive ? currentTheme.accentColor : currentTheme.primaryColor + '80',
+                  backgroundColor: currentTheme.primaryColor,
                   color: currentTheme.backgroundColor,
                   border: 'none'
                 }}
               >
-                {isActive ? (
-                  <span className="flex items-center">
-                    <Pause className="w-3 h-3 mr-1" />
-                    {formatTime(timeLeft)}
-                  </span>
-                ) : (
-                  <span className="flex items-center">
-                    <Play className="w-3 h-3 mr-1" />
-                    Timer
-                  </span>
-                )}
+                <Target className="w-3 h-3 mr-1" />
+                Fini
               </Button>
-            )}
-            
-            {/* Bouton Fini (toujours présent) */}
-            <Button 
-              onClick={() => handleMissionComplete(mission.id)}
-              disabled={!canFinish}
-              className={`${mission.hasTimer ? 'flex-1' : 'w-full'} text-xs h-8`}
-              style={{
-                backgroundColor: mission.status === 'completed' ? '#10b981' : currentTheme.primaryColor,
-                color: currentTheme.backgroundColor,
-                border: 'none'
-              }}
-            >
-              {mission.status === 'completed' ? (
-                <span className="flex items-center">
-                  <Trophy className="w-3 h-3 mr-1" />
-                  Terminé
-                </span>
-              ) : (
-                <span className="flex items-center">
-                  <Target className="w-3 h-3 mr-1" />
-                  Fini
-                </span>
-              )}
-            </Button>
-          </div>
+            </div>
+          )}
+          
+          {isCompleted && (
+            <div className="text-center py-2">
+              <span className="text-sm font-bold" style={{ color: currentTheme.primaryColor }}>
+                ✅ Mission terminée !
+              </span>
+            </div>
+          )}
         </CardContent>
       </Card>
+    );
+  };
+
+  // Composant Mini Calendrier
+  const MiniCalendar = () => {
+    const today = new Date();
+    const currentMonth = selectedDate.getMonth();
+    const currentYear = selectedDate.getFullYear();
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
+    const monthNames = [
+      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+    ];
+
+    const days = [];
+    
+    // Jours vides au début
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(<div key={`empty-${i}`} className="p-2"></div>);
+    }
+    
+    // Jours du mois
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(currentYear, currentMonth, day);
+      const isToday = date.toDateString() === today.toDateString();
+      const isSelected = date.toDateString() === selectedDate.toDateString();
+      const hasMissions = getMissionsForDate(date).length > 0;
+      
+      days.push(
+        <div
+          key={day}
+          className={`p-2 text-center cursor-pointer rounded-lg transition-all text-sm ${
+            isSelected ? 'font-bold' : ''
+          } ${isToday ? 'ring-2' : ''}`}
+          style={{
+            backgroundColor: isSelected ? currentTheme.primaryColor : 'transparent',
+            color: isSelected ? currentTheme.backgroundColor : currentTheme.textColor,
+            ringColor: isToday ? currentTheme.accentColor : 'transparent'
+          }}
+          onClick={() => {
+            setSelectedDate(date);
+            setShowCalendar(false);
+          }}
+        >
+          {day}
+          {hasMissions && (
+            <div 
+              className="w-1 h-1 rounded-full mx-auto mt-1"
+              style={{ backgroundColor: currentTheme.accentColor }}
+            ></div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div 
+        className="absolute top-12 right-0 p-4 rounded-lg shadow-xl z-50 border-2"
+        style={{
+          backgroundColor: currentTheme.cardColor,
+          borderColor: currentTheme.primaryColor + '40'
+        }}
+      >
+        <div className="flex justify-between items-center mb-3">
+          <Button
+            variant="ghost"
+            onClick={() => setSelectedDate(new Date(currentYear, currentMonth - 1, 1))}
+            className="p-1 h-auto"
+            style={{ color: currentTheme.textColor }}
+          >
+            ←
+          </Button>
+          <h3 className="font-bold text-sm" style={{ color: currentTheme.primaryColor }}>
+            {monthNames[currentMonth]} {currentYear}
+          </h3>
+          <Button
+            variant="ghost"
+            onClick={() => setSelectedDate(new Date(currentYear, currentMonth + 1, 1))}
+            className="p-1 h-auto"
+            style={{ color: currentTheme.textColor }}
+          >
+            →
+          </Button>
+        </div>
+        
+        <div className="grid grid-cols-7 gap-1 text-xs mb-2">
+          {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map(day => (
+            <div key={day} className="p-1 text-center font-bold" style={{ color: currentTheme.accentColor }}>
+              {day}
+            </div>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-7 gap-1">
+          {days}
+        </div>
+      </div>
     );
   };
 
