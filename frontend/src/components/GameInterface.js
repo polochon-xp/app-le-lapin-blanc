@@ -210,51 +210,41 @@ const GameInterface = () => {
   };
 
   const handleMissionComplete = (missionId) => {
-    const mission = missions.find(m => m.id === missionId);
-    if (mission) {
-      // Update mission progress
-      updateMissionProgress(missionId, 100);
+    const missionIndex = missions.findIndex(m => m.id === missionId);
+    if (missionIndex === -1) return;
+
+    const mission = missions[missionIndex];
+    const newMissions = [...missions];
+    
+    // Marquer comme complétée avec date
+    newMissions[missionIndex] = {
+      ...mission,
+      status: 'completed',
+      progress: 100,
+      completedDate: new Date().toISOString()
+    };
+
+    setMissions(newMissions);
+
+    // Ajouter XP
+    const category = categories.find(cat => cat.id === mission.category);
+    if (category) {
+      const newStats = addXPToStat(stats, mission.category, mission.xpReward);
+      setStats(newStats);
       
-      // Add XP to relevant stat
-      const updatedStat = addXPToStat(mission.category, mission.xpReward);
-      setStats(prev => ({
-        ...prev,
-        [mission.category]: updatedStat
-      }));
-      
-      // Update player level and check for unlocks
-      const newTotalXP = player.totalXP + mission.xpReward;
-      const newLevel = Math.floor(newTotalXP / 100) + 1;
-      
-      setPlayer(prev => ({
-        ...prev,
-        totalXP: newTotalXP,
-        level: newLevel,
-        xpToNextLevel: 100 - (newTotalXP % 100)
-      }));
-      
-      // Check for level-based unlocks
-      if (newLevel > player.level) {
-        const unlockedContent = unlockContentForLevel(newLevel);
-        if (unlockedContent.discoveries) {
-          setDiscoveries(prev => [...prev, ...unlockedContent.discoveries]);
-        }
-        if (unlockedContent.artifacts) {
-          setArtifacts(prev => [...prev, ...unlockedContent.artifacts]);
-        }
-      }
-      
-      // Chance of finding artifact
-      if (Math.random() < 0.3) {
-        const newArtifact = getRandomArtifact();
-        setArtifacts(prev => [...prev, newArtifact]);
-      }
-      
-      // Mark mission as completed
-      setMissions(prev => prev.map(m => 
-        m.id === missionId ? { ...m, status: 'completed', progress: 100 } : m
-      ));
+      // Mise à jour du joueur
+      const newPlayer = updatePlayerFromStats(newStats);
+      setPlayer(newPlayer);
     }
+
+    // Arrêter le timer si actif
+    if (activeTimer === missionId) {
+      setActiveTimer(null);
+      setTimeLeft(0);
+    }
+
+    // Toast de réussite
+    console.log(`🎉 Mission "${mission.title}" terminée ! +${mission.xpReward} XP`);
   };
 
   const formatTime = (seconds) => {
