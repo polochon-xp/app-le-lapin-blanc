@@ -991,6 +991,28 @@ const GameInterface = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Calendar Panel */}
+      <CalendarPanel
+        selectedDate={selectedDate}
+        onDateSelect={setSelectedDate}
+        currentTheme={currentTheme}
+        isOpen={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        missions={missions}
+      />
+
+      {/* Mission Detail Modal */}
+      <MissionDetailModal
+        mission={selectedMission}
+        isOpen={!!selectedMission}
+        onClose={() => setSelectedMission(null)}
+        currentTheme={currentTheme}
+        categories={categories}
+        onStartMission={startMissionTimer}
+        onCompleteMission={completeMission}
+        isCompleted={false}
+      />
+
       <style jsx>{`
         .matrix-rain {
           position: absolute;
