@@ -1106,7 +1106,10 @@ const GameInterface = () => {
         categories={categories}
         onStartMission={startMissionTimer}
         onCompleteMission={completeMission}
-        isCompleted={false}
+        onMarkAsCompleted={completeMission}
+        isCompleted={selectedMission && selectedMission.status === 'completed'}
+        activeTimer={activeTimer}
+        timeLeft={timeLeft}
       />
 
       <style jsx>{`
