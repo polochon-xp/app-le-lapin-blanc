@@ -484,7 +484,7 @@ const GameInterface = () => {
     setMissions(prev => [...prev, newMission]);
   };
 
-  // Démarrer une mission avec timer
+  // Démarrer une mission avec timer amélioré
   const startMissionTimer = (mission) => {
     if (mission.hasTimer && mission.estimatedTime) {
       setActiveTimer(mission);
