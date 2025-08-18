@@ -14,6 +14,8 @@ import {
   Dumbbell, 
   Lightbulb, 
   BookOpen, 
+  Brain,
+  CalendarDays,
   Clock, 
   Settings, 
   Play,
@@ -26,8 +28,7 @@ import {
   Gauge,
   Download,
   Upload,
-  Save,
-  Brain
+  Save
 } from 'lucide-react';
 import MissionCreator from './MissionCreator';
 import OptimizationTab from './OptimizationTab';
