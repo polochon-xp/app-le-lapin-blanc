@@ -1113,6 +1113,42 @@ const GameInterface = () => {
       />
 
       <style jsx>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
+        }
+        
+        .signature {
+          position: fixed;
+          bottom: 10px;
+          right: 20px;
+          font-family: 'Courier New', monospace;
+          font-size: 12px;
+          color: ${currentTheme.primaryColor};
+          opacity: 0.7;
+          z-index: 1000;
+          pointer-events: none;
+        }
+        
+        .pixel-font {
+          font-family: 'Courier New', monospace;
+          letter-spacing: 1px;
+        }
+        
+        .stat-bar {
+          transition: all 0.5s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .stat-glow {
+          box-shadow: 0 0 15px currentColor;
+        }
+        
         .matrix-rain {
           position: absolute;
           top: 0;
