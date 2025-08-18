@@ -311,11 +311,33 @@ const GameInterface = () => {
     const Icon = getStatIcon(category);
     const percentage = data.maxXp > 0 ? (data.xp / data.maxXp) * 100 : 0;
     
+    // Couleurs vives pour chaque catégorie
+    const categoryColors = {
+      travail: '#ff6b35',      // Orange vif
+      sport: '#4ade80',        // Vert vif  
+      creation: '#fbbf24',     // Jaune vif
+      lecture: '#06b6d4',      // Cyan vif
+      adaptabilite: '#a855f7'  // Violet vif
+    };
+    
+    const categoryColor = categoryColors[category] || currentTheme.primaryColor;
+    
     return (
-      <div className="flex items-center space-x-3 p-3 rounded-lg border bg-black/40 backdrop-blur-sm" 
-           style={{ borderColor: currentTheme.accentColor + '40' }}>
-        <div className="p-2 rounded-full" style={{ backgroundColor: currentTheme.primaryColor + '20' }}>
-          <Icon className="w-4 h-4" style={{ color: currentTheme.primaryColor }} />
+      <div 
+        className="flex items-center space-x-3 p-3 rounded-lg border bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-all" 
+        style={{ 
+          borderColor: categoryColor + '60',
+          boxShadow: `0 0 10px ${categoryColor}20`
+        }}
+      >
+        <div 
+          className="p-2 rounded-full" 
+          style={{ 
+            backgroundColor: categoryColor + '30',
+            boxShadow: `0 0 15px ${categoryColor}40`
+          }}
+        >
+          <Icon className="w-4 h-4" style={{ color: categoryColor }} />
         </div>
         <div className="flex-1">
           <div className="flex justify-between text-sm">
@@ -323,13 +345,32 @@ const GameInterface = () => {
               {getStatName(category)}
               <span className="ml-2 text-xs opacity-70">LV.{data.level}</span>
             </span>
-            <span className="text-gray-400 text-xs">{data.xp}/{data.maxXp}</span>
+            <span className="text-gray-300 text-xs font-bold">{data.xp}/{data.maxXp}</span>
           </div>
-          <Progress 
-            value={percentage} 
-            className="h-2 mt-2"
-            style={{ backgroundColor: currentTheme.cardColor }}
-          />
+          <div className="mt-2 relative">
+            <div 
+              className="h-3 rounded-full overflow-hidden"
+              style={{ backgroundColor: currentTheme.cardColor + '80' }}
+            >
+              <div 
+                className="h-full rounded-full transition-all duration-500 relative"
+                style={{ 
+                  width: `${percentage}%`,
+                  background: `linear-gradient(90deg, ${categoryColor}80, ${categoryColor})`,
+                  boxShadow: `0 0 10px ${categoryColor}60`
+                }}
+              >
+                {/* Effet de glow animé */}
+                <div 
+                  className="absolute inset-0 rounded-full animate-pulse"
+                  style={{ 
+                    background: `linear-gradient(90deg, transparent, ${categoryColor}40, transparent)`,
+                    animation: 'shimmer 2s infinite'
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
