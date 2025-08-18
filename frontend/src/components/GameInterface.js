@@ -615,17 +615,18 @@ const GameInterface = () => {
           </TabsContent>
 
           <TabsContent value="missions" className="space-y-3 relative">
-            {/* Bouton calendrier flottant */}
+            {/* Bouton calendrier flottant futuriste */}
             <Button
-              className="fixed bottom-20 right-4 z-40 rounded-full w-14 h-14 shadow-lg border-2"
+              className="fixed bottom-20 right-4 z-40 rounded-full w-14 h-14 shadow-lg border-2 hover:scale-110 transition-all duration-300"
               style={{
                 backgroundColor: currentTheme.primaryColor,
                 color: currentTheme.backgroundColor,
-                borderColor: currentTheme.accentColor
+                borderColor: currentTheme.accentColor,
+                boxShadow: `0 0 20px ${currentTheme.primaryColor}40`
               }}
               onClick={() => setShowCalendar(true)}
             >
-              📅
+              <CalendarDays className="w-6 h-6" />
             </Button>
 
             {/* Header avec date sélectionnée */}
