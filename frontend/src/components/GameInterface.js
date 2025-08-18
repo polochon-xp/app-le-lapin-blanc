@@ -88,7 +88,8 @@ const GameInterface = () => {
           { id: 'travail', name: 'Travail', stat: 'Analyse Technologique', icon: '💼', color: '#ff6b35' },
           { id: 'sport', name: 'Sport', stat: 'Endurance Physique', icon: '💪', color: '#4ade80' },
           { id: 'creation', name: 'Création', stat: 'Innovation Créative', icon: '💡', color: '#fbbf24' },
-          { id: 'lecture', name: 'Lecture', stat: 'Adaptabilité', icon: '📚', color: '#06b6d4' }
+          { id: 'lecture', name: 'Lecture', stat: 'Connaissance', icon: '📚', color: '#06b6d4' },
+          { id: 'adaptabilite', name: 'Adaptabilité', stat: 'Adaptabilité', icon: '🧠', color: '#a855f7' }
         ],
         selectedDate: new Date()
       };
