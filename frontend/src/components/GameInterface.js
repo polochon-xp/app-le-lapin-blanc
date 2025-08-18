@@ -292,7 +292,8 @@ const GameInterface = () => {
       travail: Briefcase,
       sport: Dumbbell,
       creation: Lightbulb,
-      lecture: BookOpen
+      lecture: BookOpen,
+      adaptabilite: Brain
     };
     return icons[category] || Briefcase;
   };
@@ -302,7 +303,8 @@ const GameInterface = () => {
       travail: 'Travail',
       sport: 'Sport', 
       creation: 'Création',
-      lecture: 'Lecture'
+      lecture: 'Lecture',
+      adaptabilite: 'Adaptabilité'
     };
     return names[category] || category;
   };
