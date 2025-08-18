@@ -853,15 +853,22 @@ const GameInterface = () => {
 
             {/* Liste des missions sous forme de cards */}
             <div className="space-y-2">
-              {getMissionsForDate(selectedDate).map(mission => (
-                <MissionCard 
-                  key={mission.id} 
-                  mission={mission} 
-                  currentTheme={currentTheme}
-                  categories={categories}
-                  onClick={setSelectedMission}
-                />
-              ))}
+              {getMissionsForDate(selectedDate).map(mission => {
+                const isCompleted = mission.status === 'completed' && 
+                                   mission.completedDate && 
+                                   new Date(mission.completedDate).toDateString() === selectedDate.toDateString();
+                
+                return (
+                  <MissionCard 
+                    key={mission.id} 
+                    mission={mission} 
+                    currentTheme={currentTheme}
+                    categories={categories}
+                    onClick={setSelectedMission}
+                    isCompleted={isCompleted}
+                  />
+                );
+              })}
               
               {getMissionsForDate(selectedDate).length === 0 && (
                 <Card className="border-0 bg-black/40 backdrop-blur-sm">
