@@ -492,21 +492,158 @@ const GameInterface = () => {
     }
   };
 
-  // Marquer une mission comme terminée
+  // Marquer une mission comme terminée avec nouveau système de récompenses
   const completeMission = (missionId) => {
     const mission = missions.find(m => m.id === missionId);
     if (!mission) return;
 
-    // Ajouter XP à la stat correspondante
+    // +5 XP pour mission terminée
     if (mission.category && mission.xpReward) {
-      addXPToStat(stats, setStats, mission.category, mission.xpReward);
+      addXPToCategory(mission.category, 5);
     }
 
-    // Mettre à jour les missions (pour les missions quotidiennes/hebdo, on ne les supprime pas)
-    if (mission.type === 'once') {
-      setMissions(prev => prev.filter(m => m.id !== missionId));
+    // +10 XP Santé pour mission terminée
+    updateHealth(10);
+
+    // Marquer la mission comme complétée
+    setMissions(prev => prev.map(m => 
+      m.id === missionId 
+        ? { ...m, status: 'completed', completedDate: new Date().toISOString() }
+        : m
+    ));
+
+    console.log(`✅ Mission "${mission.title}" terminée ! +5 XP ${mission.category}, +10 Santé`);
+  };
+
+  // Nouvelle fonction pour ajouter XP à une catégorie avec progression infinie
+  const addXPToCategory = (categoryId, xpAmount) => {
+    setStats(prevStats => {
+      const newStats = { ...prevStats };
+      const currentStat = newStats[categoryId];
+      
+      if (currentStat) {
+        let newXP = currentStat.xp + xpAmount;
+        let newLevel = currentStat.level;
+        let levelUps = 0;
+
+        // Progression infinie : chaque 100 XP = +1 niveau
+        while (newXP >= 100) {
+          newXP -= 100;
+          newLevel += 1;
+          levelUps += 1;
+        }
+
+        newStats[categoryId] = {
+          ...currentStat,
+          xp: newXP,
+          level: newLevel
+        };
+
+        // Si level up, +10 XP global au joueur
+        if (levelUps > 0) {
+          setPlayer(prevPlayer => {
+            let newGlobalXP = prevPlayer.totalXP + (levelUps * 10);
+            let newGlobalLevel = prevPlayer.level;
+
+            // Level up global à 100 XP
+            while (newGlobalXP >= 100) {
+              newGlobalXP -= 100;
+              newGlobalLevel += 1;
+            }
+
+            return {
+              ...prevPlayer,
+              totalXP: newGlobalXP,
+              level: newGlobalLevel,
+              xpToNextLevel: 100 - newGlobalXP
+            };
+          });
+
+          console.log(`🎉 ${categoryId} niveau ${newLevel} ! +${levelUps * 10} XP global`);
+        }
+      }
+
+      return newStats;
+    });
+  };
+
+  // Fonction pour mettre à jour la santé
+  const updateHealth = (healthChange) => {
+    setPlayer(prevPlayer => {
+      const newHealth = Math.max(0, Math.min(100, prevPlayer.health + healthChange));
+      
+      // Si santé = 0, perdre un niveau global
+      if (newHealth === 0 && prevPlayer.level > 1) {
+        console.log('💀 Santé à 0 ! Niveau global -1');
+        return {
+          ...prevPlayer,
+          health: newHealth,
+          level: prevPlayer.level - 1,
+          totalXP: 0
+        };
+      }
+      
+      return {
+        ...prevPlayer,
+        health: newHealth
+      };
+    });
+  };
+
+  // Fonction pour mettre à jour l'énergie
+  const updateEnergy = (energyChange) => {
+    setPlayer(prevPlayer => ({
+      ...prevPlayer,
+      energy: Math.max(0, Math.min(100, prevPlayer.energy + energyChange))
+    }));
+  };
+
+  // Timer terminé : +2 XP dans la catégorie
+  const onTimerComplete = (mission) => {
+    if (mission.category) {
+      addXPToCategory(mission.category, 2);
+      console.log(`⏱️ Timer terminé ! +2 XP ${mission.category}`);
     }
-    // Pour les missions récurrentes, on garde la mission pour les prochains jours
+  };
+
+  // Système de vérification à minuit (simulation)
+  const checkDailyPenalties = () => {
+    const today = new Date().toDateString();
+    const todayMissions = getMissionsForDate(new Date());
+    
+    // Vérifier les missions non terminées
+    todayMissions.forEach(mission => {
+      if (mission.status !== 'completed') {
+        // -8 XP pour mission non réalisée
+        addXPToCategory(mission.category, -8);
+        // -10 XP Santé pour mission non terminée
+        updateHealth(-10);
+        console.log(`❌ Mission "${mission.title}" non terminée ! -8 XP ${mission.category}, -10 Santé`);
+      }
+    });
+
+    // Vérifier progression des catégories pour l'énergie
+    const categoriesProgressed = Object.keys(stats).filter(category => {
+      // Logique simplifiée : si XP > 0, considéré comme progressé
+      return stats[category].xp > 0;
+    }).length;
+
+    if (categoriesProgressed === Object.keys(stats).length) {
+      updateEnergy(5);
+      console.log('⚡ Toutes les catégories ont progressé ! +5 Énergie');
+    } else if (categoriesProgressed === 0) {
+      updateEnergy(-5);
+      console.log('😴 Aucune progression ! -5 Énergie');
+    }
+
+    // Bonus santé parfaite
+    if (player.health === 100) {
+      setPlayer(prev => ({
+        ...prev,
+        totalXP: prev.totalXP + 2
+      }));
+      console.log('💚 Santé parfaite ! +2 XP global');
+    }
   };
 
   return (
