@@ -420,12 +420,16 @@ def run_all_tests():
     # Track test results
     test_results = {}
     
-    # Run tests
+    # Run basic infrastructure tests
     test_results['server_accessible'] = test_server_accessibility(backend_url)
     test_results['root_endpoint'] = test_root_endpoint(backend_url)
     test_results['status_get'] = test_status_endpoint_get(backend_url)
     test_results['status_post'] = test_status_endpoint_post(backend_url)
     test_results['cors_headers'] = test_cors_headers(backend_url)
+    
+    # Run authentication system tests
+    auth_results = test_authentication_system(backend_url)
+    test_results.update(auth_results)
     
     # Summary
     print("\n" + "=" * 60)
@@ -435,16 +439,32 @@ def run_all_tests():
     passed = 0
     total = len(test_results)
     
-    for test_name, result in test_results.items():
-        status = "✅ PASS" if result else "❌ FAIL"
-        print(f"{test_name.replace('_', ' ').title()}: {status}")
-        if result:
-            passed += 1
+    # Basic infrastructure tests
+    print("\n🏗️  INFRASTRUCTURE TESTS:")
+    infra_tests = ['server_accessible', 'root_endpoint', 'status_get', 'status_post', 'cors_headers']
+    for test_name in infra_tests:
+        if test_name in test_results:
+            result = test_results[test_name]
+            status = "✅ PASS" if result else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+            if result:
+                passed += 1
+    
+    # Authentication system tests
+    print("\n🔐 AUTHENTICATION SYSTEM TESTS:")
+    auth_tests = ['registration', 'login', 'profile', 'user_search', 'logout']
+    for test_name in auth_tests:
+        if test_name in test_results:
+            result = test_results[test_name]
+            status = "✅ PASS" if result else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+            if result:
+                passed += 1
     
     print(f"\nOverall: {passed}/{total} tests passed")
     
     if passed == total:
-        print("🎉 All backend tests PASSED! Backend is ready for PWA implementation.")
+        print("🎉 All backend tests PASSED! Authentication system is fully functional.")
         return True
     else:
         print("⚠️  Some backend tests FAILED. Issues need to be resolved.")
