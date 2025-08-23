@@ -245,15 +245,9 @@ const GameInterface = () => {
         xpToNextLevel: 100 - (newTotalXP % 100)
       }));
       
-      // Check for level-based unlocks
+      // Level up du joueur si nécessaire
       if (newLevel > player.level) {
-        const unlockedContent = unlockContentForLevel(newLevel);
-        if (unlockedContent.discoveries) {
-          setDiscoveries(prev => [...prev, ...unlockedContent.discoveries]);
-        }
-        if (unlockedContent.artifacts) {
-          setArtifacts(prev => [...prev, ...unlockedContent.artifacts]);
-        }
+        console.log(`🎉 Niveau global ${newLevel} atteint !`);
       }
       
       // Chance of finding artifact
