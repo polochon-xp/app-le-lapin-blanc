@@ -785,7 +785,7 @@ const GameInterface = () => {
               <Users className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="map" className="text-xs p-1 data-[state=active]:bg-white/10">
-              <MapPin className="w-4 h-4" />
+              <Sword className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="titles" className="text-xs p-1 data-[state=active]:bg-white/10">
               <Trophy className="w-4 h-4" />
