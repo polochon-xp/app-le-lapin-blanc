@@ -898,36 +898,15 @@ const GameInterface = () => {
           </TabsContent>
 
           <TabsContent value="friends" className="space-y-3">
-            <Card className="border-0 bg-black/40 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" 
-                       style={{ color: currentTheme.primaryColor }} />
-                <p className="text-sm text-gray-400 mb-2">Amis / Club</p>
-                <p className="text-xs text-gray-500">Fonctionnalité en cours de développement</p>
-              </CardContent>
-            </Card>
+            <SocialTab currentTheme={currentTheme} />
           </TabsContent>
 
           <TabsContent value="map" className="space-y-3">
-            <Card className="border-0 bg-black/40 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <MapPin className="w-12 h-12 mx-auto mb-3 opacity-50" 
-                        style={{ color: currentTheme.primaryColor }} />
-                <p className="text-sm text-gray-400 mb-2">Carte</p>
-                <p className="text-xs text-gray-500">Fonctionnalité en cours de développement</p>
-              </CardContent>
-            </Card>
+            <AttackTab currentTheme={currentTheme} />
           </TabsContent>
 
           <TabsContent value="titles" className="space-y-3">
-            <Card className="border-0 bg-black/40 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <Trophy className="w-12 h-12 mx-auto mb-3 opacity-50" 
-                        style={{ color: currentTheme.primaryColor }} />
-                <p className="text-sm text-gray-400 mb-2">Titres</p>
-                <p className="text-xs text-gray-500">Fonctionnalité en cours de développement</p>
-              </CardContent>
-            </Card>
+            <TitlesTab currentTheme={currentTheme} />
           </TabsContent>
 
           <TabsContent value="optimization">
