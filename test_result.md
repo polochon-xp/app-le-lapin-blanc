@@ -356,15 +356,18 @@ backend:
 
   - task: "POST /api/clubs/create - Créer un club"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Permet de créer un nouveau club avec nom unique, description et limite de 20 membres"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/clubs/create fonctionne parfaitement. Club 'Les Aventuriers du Terrier' créé avec succès, propriétaire ajouté automatiquement, limite 20 membres, UUID généré."
 
   - task: "GET /api/clubs/search/{name} - Rechercher des clubs"
     implemented: true
