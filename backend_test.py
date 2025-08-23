@@ -705,7 +705,7 @@ def test_attack_system_flow(base_url, token1, token2, attack_id, username1, user
         print(f"❌ Attack system flow connection error: {e}")
         return False
 
-def test_friends_system(base_url, token1, token2):
+def test_friends_system(base_url, token1, token2, username2):
     """Test friends system endpoints"""
     print("\n🔍 Testing friends system...")
     try:
@@ -716,7 +716,7 @@ def test_friends_system(base_url, token1, token2):
         
         # Add friend
         response = requests.post(
-            f"{base_url}/api/user/add-friend?friend_username=bob_hatter",
+            f"{base_url}/api/user/add-friend?friend_username={username2}",
             headers=headers1,
             timeout=10
         )
@@ -743,7 +743,7 @@ def test_friends_system(base_url, token1, token2):
                     
                     if len(friends) > 0:
                         friend = friends[0]
-                        if friend.get("username") == "bob_hatter":
+                        if friend.get("username") == username2:
                             print("✅ Friend appears in friends list with correct data")
                             return True
                         else:
