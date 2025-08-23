@@ -611,7 +611,7 @@ def test_user_titles(base_url, token):
         print(f"❌ User titles connection error: {e}")
         return False
 
-def test_attack_system_flow(base_url, token1, token2, attack_id):
+def test_attack_system_flow(base_url, token1, token2, attack_id, username1, username2):
     """Test complete attack system flow between two users"""
     print("\n🔍 Testing attack system flow...")
     try:
@@ -626,7 +626,7 @@ def test_attack_system_flow(base_url, token1, token2, attack_id):
         
         # User 1 attacks User 2
         attack_data = {
-            "target_username": "bob_hatter",
+            "target_username": username2,
             "attack_id": attack_id,
             "target_stat": "travail",
             "effect_target": "elo"
@@ -661,7 +661,7 @@ def test_attack_system_flow(base_url, token1, token2, attack_id):
                     
                     if len(pending) > 0:
                         attack_pending = pending[0]
-                        if attack_pending.get("attacker") == "alice_wonderland":
+                        if attack_pending.get("attacker") == username1:
                             print("✅ Attack correctly appears in target's pending attacks")
                             
                             # Apply pending attacks
