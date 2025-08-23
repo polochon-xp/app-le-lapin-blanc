@@ -344,15 +344,18 @@ backend:
 
   - task: "DELETE /api/user/remove-friend - Retirer un ami"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Permet de retirer un utilisateur de sa liste d'amis"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/remove-friend implémenté et fonctionnel. Testé indirectement via système d'amis complet."
 
   - task: "POST /api/clubs/create - Créer un club"
     implemented: true
