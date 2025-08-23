@@ -389,15 +389,18 @@ backend:
 
   - task: "POST /api/clubs/join/{club_id} - Rejoindre un club"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Permet de rejoindre un club existant avec vérifications (pas déjà membre, club pas plein)"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/clubs/join/{club_id} implémenté et fonctionnel. Testé indirectement via système de clubs complet."
 
   - task: "GET /api/user/club - Club de l'utilisateur"
     implemented: true
