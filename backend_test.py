@@ -908,7 +908,7 @@ def test_attack_defense_title_system(base_url):
             username1 = test_user1["username"]
             print("✅ First test user created successfully")
         else:
-            print("❌ Failed to create first user - skipping system tests")
+            print(f"❌ Failed to create first user: {response.status_code} - {response.text}")
             return system_results
     except Exception as e:
         print(f"❌ Error creating first user: {e}")
@@ -936,7 +936,7 @@ def test_attack_defense_title_system(base_url):
             username2 = test_user2["username"]
             print("✅ Second test user created successfully")
         else:
-            print("❌ Failed to create second user - skipping multi-user tests")
+            print(f"❌ Failed to create second user: {response.status_code} - {response.text}")
             token2 = None
             username2 = None
     except Exception as e:
