@@ -234,7 +234,7 @@ def test_user_login(base_url, username):
         print(f"❌ Login connection error: {e}")
         return False, None
 
-def test_user_profile(base_url, token):
+def test_user_profile(base_url, token, expected_username):
     """Test GET /api/auth/me endpoint"""
     print("\n🔍 Testing user profile /api/auth/me...")
     try:
@@ -275,7 +275,7 @@ def test_user_profile(base_url, token):
                         print(f"❌ Missing stats category: {category}")
                         elo_check = False
                 
-                if data["username"] == "alice_wonderland" and elo_check:
+                if data["username"] == expected_username and elo_check:
                     print("✅ User profile retrieved successfully with correct ELO stats")
                     return True
                 else:
