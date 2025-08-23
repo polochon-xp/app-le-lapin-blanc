@@ -41,12 +41,9 @@ import {
   mockPlayer, 
   mockStats, 
   mockMissions, 
-  mockDiscoveries, 
-  mockArtifacts, 
   updateMissionProgress, 
   addXPToStat,
-  unlockContentForLevel,
-  getRandomArtifact
+  unlockContentForLevel
 } from '../data/mock';
 import { themes } from '../data/themes';
 
