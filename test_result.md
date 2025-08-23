@@ -239,15 +239,18 @@ backend:
 
   - task: "GET /api/user/pending-attacks - Attaques en attente"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Récupère toutes les attaques en attente d'application pour l'utilisateur connecté avec détails de l'attaquant"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/pending-attacks fonctionne parfaitement. Attaque en attente correctement récupérée avec détails complets: attaquant, attaque, target_stat, effect_target, created_at. Intégration parfaite avec le système d'attaque."
 
   - task: "POST /api/user/apply-pending-attacks - Appliquer les effets"
     implemented: true
