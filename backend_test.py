@@ -882,15 +882,65 @@ def test_attack_defense_title_system(base_url):
     system_results['attacks_list'] = test_attacks_endpoint(base_url)
     system_results['titles_list'] = test_titles_endpoint(base_url)
     
-    # Create two test users for interaction testing
-    success1, token1, username1 = test_user_registration(base_url)
-    if not success1:
-        print("❌ Failed to create first user - skipping system tests")
+    # Create two test users for interaction testing with unique identifiers
+    import time
+    import random
+    unique_id = f"{int(time.time())}_{random.randint(1000, 9999)}"
+    
+    print(f"\n🔍 Creating first test user with unique ID: {unique_id}")
+    test_user1 = {
+        "username": f"alice_system_{unique_id}",
+        "email": f"alice_system_{unique_id}@wonderland.com", 
+        "password": "rabbit_hole123"
+    }
+    
+    try:
+        response = requests.post(
+            f"{base_url}/api/auth/register",
+            json=test_user1,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            token1 = data["access_token"]
+            username1 = test_user1["username"]
+            print("✅ First test user created successfully")
+        else:
+            print("❌ Failed to create first user - skipping system tests")
+            return system_results
+    except Exception as e:
+        print(f"❌ Error creating first user: {e}")
         return system_results
     
-    success2, token2, username2 = create_second_test_user(base_url)
-    if not success2:
-        print("❌ Failed to create second user - skipping multi-user tests")
+    # Create second user
+    unique_id2 = f"{int(time.time())}_{random.randint(5000, 9999)}"
+    test_user2 = {
+        "username": f"bob_system_{unique_id2}",
+        "email": f"bob_system_{unique_id2}@madhatter.com",
+        "password": "tea_party456"
+    }
+    
+    try:
+        response = requests.post(
+            f"{base_url}/api/auth/register",
+            json=test_user2,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            token2 = data["access_token"]
+            username2 = test_user2["username"]
+            print("✅ Second test user created successfully")
+        else:
+            print("❌ Failed to create second user - skipping multi-user tests")
+            token2 = None
+            username2 = None
+    except Exception as e:
+        print(f"❌ Error creating second user: {e}")
         token2 = None
         username2 = None
     
