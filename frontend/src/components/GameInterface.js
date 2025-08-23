@@ -249,12 +249,6 @@ const GameInterface = () => {
       if (newLevel > player.level) {
         console.log(`🎉 Niveau global ${newLevel} atteint !`);
       }
-      
-      // Chance of finding artifact
-      if (Math.random() < 0.3) {
-        const newArtifact = getRandomArtifact();
-        setArtifacts(prev => [...prev, newArtifact]);
-      }
     }
 
     // Arrêter le timer si actif
