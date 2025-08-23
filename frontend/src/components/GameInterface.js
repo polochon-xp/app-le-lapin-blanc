@@ -57,6 +57,31 @@ const GameInterface = () => {
   const { isAuthenticated, user, loading, login } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
+  // Si l'authentification est en cours de vérification, afficher un écran de chargement
+  if (loading) {
+    return (
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{ 
+          background: `linear-gradient(135deg, ${themes.bright.backgroundColor} 0%, #1a0d00 100%)` 
+        }}
+      >
+        <div className="text-center">
+          <div 
+            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
+            style={{ borderColor: themes.bright.primaryColor }}
+          ></div>
+          <p className="text-lg font-medium" style={{ color: themes.bright.primaryColor }}>
+            Le Lapin Blanc
+          </p>
+          <p className="text-sm opacity-75" style={{ color: themes.bright.textColor }}>
+            Chargement...
+          </p>
+        </div>
+      </div>
+    );
+  }
   // Initialisation avec données sauvegardées ou par défaut
   const initializeGameState = () => {
     try {
