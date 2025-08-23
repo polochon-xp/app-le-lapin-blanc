@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Tester le nouveau système d'authentification backend pour l'application 'Le Lapin Blanc' : Nouveaux endpoints à tester : 1. Inscription utilisateur - POST /api/auth/register, 2. Connexion utilisateur - POST /api/auth/login, 3. Profil utilisateur - GET /api/auth/me, 4. Recherche utilisateur - GET /api/users/search/testuser, 5. Déconnexion - POST /api/auth/logout. Points importants à vérifier : noms d'utilisateur uniques, stats ELO initialisées à 1200, tokens JWT valides, base MongoDB fonctionnelle."
+user_problem_statement: "Développement du système d'attaques, défenses et titres complet pour l'application 'Le Lapin Blanc'. Nouveaux endpoints à tester : 1. Système d'attaques: GET /api/attacks, GET /api/user/attacks, POST /api/user/attack, POST /api/user/level-up, GET /api/user/pending-attacks, POST /api/user/apply-pending-attacks; 2. Système de titres: GET /api/titles, GET /api/user/titles, POST /api/user/select-title; 3. Système social: POST /api/user/add-friend, GET /api/user/friends, DELETE /api/user/remove-friend, POST /api/clubs/create, GET /api/clubs/search/{name}, POST /api/clubs/join/{club_id}, GET /api/user/club, POST /api/clubs/leave. Points importants à vérifier : 50 attaques complètes, gain d'attaques aléatoires en montant de niveau, application des effets d'attaques, gestion des titres selon le niveau, système d'amis et clubs fonctionnel."
 
 backend:
   - task: "Endpoint racine /api/ pour statut de santé"
