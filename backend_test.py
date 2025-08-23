@@ -191,12 +191,12 @@ def test_user_registration(base_url):
         print(f"❌ Registration connection error: {e}")
         return False, None, None
 
-def test_user_login(base_url):
+def test_user_login(base_url, username):
     """Test POST /api/auth/login endpoint"""
-    print("\n🔍 Testing user login /api/auth/login...")
+    print(f"\n🔍 Testing user login /api/auth/login for {username}...")
     try:
         login_data = {
-            "username": "alice_wonderland",
+            "username": username,
             "password": "rabbit_hole123"
         }
         
