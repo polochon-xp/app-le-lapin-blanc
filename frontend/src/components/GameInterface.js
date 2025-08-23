@@ -83,8 +83,6 @@ const GameInterface = () => {
         player: mockPlayer,
         stats: mockStats,
         missions: mockMissions,
-        discoveries: mockDiscoveries,
-        artifacts: mockArtifacts,
         theme: themes.bright,
         categories: [
           { id: 'travail', name: 'Travail', stat: 'Analyse Technologique', icon: '💼', color: '#ff6b35' },
