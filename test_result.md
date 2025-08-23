@@ -493,10 +493,23 @@ metadata:
   test_sequence: 1
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "GET /api/attacks - Liste des 50 attaques disponibles"
+    - "GET /api/user/attacks - Attaques disponibles de l'utilisateur"
+    - "POST /api/user/attack - Utiliser une attaque"
+    - "POST /api/user/level-up - Monter de niveau et gagner attaque"
+    - "GET /api/user/pending-attacks - Attaques en attente"
+    - "POST /api/user/apply-pending-attacks - Appliquer les effets"
+    - "GET /api/titles - Liste des titres disponibles"
+    - "GET /api/user/titles - Titres de l'utilisateur"
+    - "POST /api/user/select-title - Choisir un titre"
+    - "POST /api/user/add-friend - Ajouter un ami"
+    - "GET /api/user/friends - Liste des amis"
+    - "POST /api/clubs/create - Créer un club"
+    - "GET /api/user/club - Club de l'utilisateur"
   stuck_tasks: []
   test_all: false
-  test_priority: "authentication_system_completed"
+  test_priority: "attack_defense_system_priority"
 
 agent_communication:
     - agent: "testing"
