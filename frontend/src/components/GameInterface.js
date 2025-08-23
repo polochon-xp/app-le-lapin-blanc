@@ -17,7 +17,7 @@ import {
   Brain,
   CalendarDays,
   Users,
-  MapPin,
+  Sword,
   Clock, 
   Settings, 
   Play,
