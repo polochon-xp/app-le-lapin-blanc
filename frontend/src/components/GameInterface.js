@@ -746,20 +746,38 @@ const GameInterface = () => {
             </div>
             <div>
               <h1 className="text-lg font-bold" style={{ color: currentTheme.textColor }}>
-                {player.name}
+                {isAuthenticated && user ? user.username : 'Novice-001'}
               </h1>
-              <p className="text-xs text-gray-400">Niv {player.level} • {player.totalXP} XP</p>
+              <p className="text-xs text-gray-400">
+                {isAuthenticated && user 
+                  ? `Niv ${Object.values(user.stats).reduce((total, stat) => total + stat.level, 0)} • ELO Moyen ${Math.round(Object.values(user.stats).reduce((total, stat) => total + stat.elo, 0) / Object.values(user.stats).length)}`
+                  : 'Niv 1 • 25 XP'
+                }
+              </p>
             </div>
           </div>
           
-          <Button 
-            variant="ghost"
-            onClick={() => setShowSettings(true)}
-            className="p-2 h-auto"
-            style={{ color: currentTheme.textColor }}
-          >
-            <Settings className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {isAuthenticated && (
+              <Button 
+                variant="ghost"
+                onClick={() => setShowProfile(true)}
+                className="p-2 h-auto"
+                style={{ color: currentTheme.textColor }}
+              >
+                <User className="w-5 h-5" />
+              </Button>
+            )}
+            
+            <Button 
+              variant="ghost"
+              onClick={() => isAuthenticated ? setShowSettings(true) : setShowAuthModal(true)}
+              className="p-2 h-auto"
+              style={{ color: currentTheme.textColor }}
+            >
+              {isAuthenticated ? <Settings className="w-5 h-5" /> : <User className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
 
         {/* Status Mobile */}
