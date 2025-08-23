@@ -111,8 +111,6 @@ const GameInterface = () => {
       localStorage.setItem('lapinBlanc_player', JSON.stringify(player));
       localStorage.setItem('lapinBlanc_stats', JSON.stringify(stats));
       localStorage.setItem('lapinBlanc_missions', JSON.stringify(missions));
-      localStorage.setItem('lapinBlanc_discoveries', JSON.stringify(discoveries));
-      localStorage.setItem('lapinBlanc_artifacts', JSON.stringify(artifacts));
       localStorage.setItem('lapinBlanc_theme', JSON.stringify(currentTheme));
       localStorage.setItem('lapinBlanc_categories', JSON.stringify(categories));
       localStorage.setItem('lapinBlanc_selectedDate', JSON.stringify(selectedDate));
