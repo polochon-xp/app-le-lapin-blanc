@@ -40,6 +40,9 @@ import CalendarPanel from './CalendarPanel';
 import AttackTab from './AttackTab';
 import SocialTab from './SocialTab';
 import TitlesTab from './TitlesTab';
+import AuthModal from './AuthModal';
+import UserProfile from './UserProfile';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   mockPlayer, 
   mockStats, 
