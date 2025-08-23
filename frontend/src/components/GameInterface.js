@@ -771,14 +771,14 @@ const GameInterface = () => {
             <TabsTrigger value="missions" className="text-xs p-1 data-[state=active]:bg-white/10">
               <Target className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="discoveries" className="text-xs p-1 data-[state=active]:bg-white/10">
-              <ScrollText className="w-4 h-4" />
+            <TabsTrigger value="friends" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <Users className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="artifacts" className="text-xs p-1 data-[state=active]:bg-white/10">
-              <Package className="w-4 h-4" />
+            <TabsTrigger value="map" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <MapPin className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="story" className="text-xs p-1 data-[state=active]:bg-white/10">
-              <BookOpen className="w-4 h-4" />
+            <TabsTrigger value="titles" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <Trophy className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="optimization" className="text-xs p-1 data-[state=active]:bg-white/10">
               <Brain className="w-4 h-4" />
