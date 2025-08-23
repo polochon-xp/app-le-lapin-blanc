@@ -224,15 +224,18 @@ backend:
 
   - task: "POST /api/user/level-up - Monter de niveau et gagner attaque"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Permet de faire monter un utilisateur de niveau dans une stat et lui donne une attaque aléatoire parmi les 50 disponibles"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/level-up fonctionne parfaitement. Test avec stat 'travail': niveau passé de 0 à 1, attaque aléatoire 'Entrave physique' gagnée avec tous les détails. Système de gain d'attaque aléatoire opérationnel."
 
   - task: "GET /api/user/pending-attacks - Attaques en attente"
     implemented: true
