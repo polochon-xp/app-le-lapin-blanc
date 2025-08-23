@@ -395,15 +395,18 @@ backend:
 
   - task: "GET /api/user/club - Club de l'utilisateur"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Retourne les infos complètes du club de l'utilisateur avec la liste des membres et leurs stats"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/club fonctionne parfaitement. Infos complètes du club retournées avec détails (id, name, description, owner, members, created_at, max_members) et liste des membres avec leurs stats complètes."
 
   - task: "POST /api/clubs/leave - Quitter un club"
     implemented: true
