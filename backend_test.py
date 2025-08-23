@@ -843,9 +843,11 @@ def create_second_test_user(base_url):
     """Create a second test user for multi-user testing"""
     print("\n🔍 Creating second test user...")
     try:
+        import time
+        timestamp = str(int(time.time()))
         test_user = {
-            "username": "bob_hatter",
-            "email": "bob@madhatter.com",
+            "username": f"bob_test_{timestamp}",
+            "email": f"bob_test_{timestamp}@madhatter.com",
             "password": "tea_party456"
         }
         
@@ -860,14 +862,14 @@ def create_second_test_user(base_url):
             data = response.json()
             if "access_token" in data:
                 print("✅ Second test user created successfully")
-                return True, data["access_token"]
+                return True, data["access_token"], test_user["username"]
         
         print("❌ Failed to create second test user")
-        return False, None
+        return False, None, None
         
     except requests.exceptions.RequestException as e:
         print(f"❌ Second user creation error: {e}")
-        return False, None
+        return False, None, None
 
 def test_attack_defense_title_system(base_url):
     """Test complete attack, defense and title system"""
