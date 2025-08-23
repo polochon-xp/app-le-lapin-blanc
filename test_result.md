@@ -194,15 +194,18 @@ backend:
 
   - task: "GET /api/user/attacks - Attaques disponibles de l'utilisateur"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Endpoint qui retourne les attaques non utilisées de l'utilisateur connecté avec leurs détails complets"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/attacks fonctionne parfaitement. Nouvel utilisateur a correctement 0 attaques initialement. Structure validée avec tous les champs requis (id, name, description, effect_type, effect_value, duration_hours, obtained_at)."
 
   - task: "POST /api/user/attack - Utiliser une attaque"
     implemented: true
