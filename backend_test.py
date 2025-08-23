@@ -149,10 +149,12 @@ def test_user_registration(base_url):
     """Test POST /api/auth/register endpoint"""
     print("\n🔍 Testing user registration /api/auth/register...")
     try:
-        # Use realistic test data for Le Lapin Blanc RPG
+        # Use unique test data with timestamp to avoid conflicts
+        import time
+        timestamp = str(int(time.time()))
         test_user = {
-            "username": "alice_wonderland",
-            "email": "alice@wonderland.com", 
+            "username": f"alice_test_{timestamp}",
+            "email": f"alice_test_{timestamp}@wonderland.com", 
             "password": "rabbit_hole123"
         }
         
@@ -173,21 +175,21 @@ def test_user_registration(base_url):
             if "access_token" in data and "token_type" in data:
                 if data["token_type"] == "bearer" and len(data["access_token"]) > 0:
                     print("✅ User registration successful - JWT token received")
-                    return True, data["access_token"]
+                    return True, data["access_token"], test_user["username"]
                 else:
                     print("❌ Invalid token format in registration response")
-                    return False, None
+                    return False, None, None
             else:
                 print("❌ Registration response missing token fields")
-                return False, None
+                return False, None, None
         else:
             print(f"❌ Registration failed with status {response.status_code}")
             print(f"Response: {response.text}")
-            return False, None
+            return False, None, None
             
     except requests.exceptions.RequestException as e:
         print(f"❌ Registration connection error: {e}")
-        return False, None
+        return False, None, None
 
 def test_user_login(base_url):
     """Test POST /api/auth/login endpoint"""
