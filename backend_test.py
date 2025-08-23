@@ -883,15 +883,16 @@ def test_attack_defense_title_system(base_url):
     system_results['titles_list'] = test_titles_endpoint(base_url)
     
     # Create two test users for interaction testing
-    success1, token1 = test_user_registration(base_url)
+    success1, token1, username1 = test_user_registration(base_url)
     if not success1:
         print("❌ Failed to create first user - skipping system tests")
         return system_results
     
-    success2, token2 = create_second_test_user(base_url)
+    success2, token2, username2 = create_second_test_user(base_url)
     if not success2:
         print("❌ Failed to create second user - skipping multi-user tests")
         token2 = None
+        username2 = None
     
     # Test user-specific endpoints
     system_results['user_attacks'] = test_user_attacks(base_url, token1)
@@ -902,9 +903,9 @@ def test_attack_defense_title_system(base_url):
     system_results['level_up'] = success
     
     # Test attack system flow if we have two users and an attack
-    if token2 and attack_id:
-        system_results['attack_flow'] = test_attack_system_flow(base_url, token1, token2, attack_id)
-        system_results['friends_system'] = test_friends_system(base_url, token1, token2)
+    if token2 and attack_id and username2:
+        system_results['attack_flow'] = test_attack_system_flow(base_url, token1, token2, attack_id, username1, username2)
+        system_results['friends_system'] = test_friends_system(base_url, token1, token2, username2)
     else:
         system_results['attack_flow'] = False
         system_results['friends_system'] = False
