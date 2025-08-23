@@ -293,9 +293,9 @@ def test_user_profile(base_url, token, expected_username):
         print(f"❌ Profile retrieval connection error: {e}")
         return False
 
-def test_user_search(base_url, token):
+def test_user_search(base_url, token, username):
     """Test GET /api/users/search/{username} endpoint"""
-    print("\n🔍 Testing user search /api/users/search/alice_wonderland...")
+    print(f"\n🔍 Testing user search /api/users/search/{username}...")
     try:
         headers = {
             "Authorization": f"Bearer {token}",
@@ -303,7 +303,7 @@ def test_user_search(base_url, token):
         }
         
         response = requests.get(
-            f"{base_url}/api/users/search/alice_wonderland",
+            f"{base_url}/api/users/search/{username}",
             headers=headers,
             timeout=10
         )
@@ -315,7 +315,7 @@ def test_user_search(base_url, token):
             print(f"Response: {data}")
             
             # Validate search result
-            if data.get("username") == "alice_wonderland":
+            if data.get("username") == username:
                 required_fields = ["id", "username", "stats", "is_online"]
                 if all(field in data for field in required_fields):
                     print("✅ User search successful - found created user")
