@@ -130,6 +130,94 @@ class UserProfile(BaseModel):
     is_online: bool
     last_login: Optional[datetime] = None
 
+# Authentication endpoints
+@api_router.post("/auth/register", response_model=Token)
+async def register(user_data: UserCreate):
+    # Vérifier si l'utilisateur existe déjà
+    existing_user = await db.users.find_one({"$or": [{"username": user_data.username}, {"email": user_data.email}]})
+    if existing_user:
+        if existing_user.get("username") == user_data.username:
+            raise HTTPException(status_code=400, detail="Nom d'utilisateur déjà pris")
+        else:
+            raise HTTPException(status_code=400, detail="Email déjà utilisé")
+    
+    # Créer le nouvel utilisateur
+    hashed_password = get_password_hash(user_data.password)
+    user_dict = User(
+        username=user_data.username,
+        email=user_data.email
+    ).dict()
+    user_dict["password"] = hashed_password
+    
+    await db.users.insert_one(user_dict)
+    
+    # Créer le token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user_data.username}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@api_router.post("/auth/login", response_model=Token)
+async def login(user_data: UserLogin):
+    # Trouver l'utilisateur
+    user = await db.users.find_one({"username": user_data.username})
+    if not user or not verify_password(user_data.password, user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nom d'utilisateur ou mot de passe incorrect",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Mettre à jour le statut en ligne
+    await db.users.update_one(
+        {"username": user_data.username},
+        {"$set": {"is_online": True, "last_login": datetime.utcnow()}}
+    )
+    
+    # Créer le token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user_data.username}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@api_router.get("/auth/me", response_model=UserProfile)
+async def get_me(current_user: User = Depends(get_current_user)):
+    return UserProfile(
+        id=current_user.id,
+        username=current_user.username,
+        stats=current_user.stats,
+        is_online=current_user.is_online,
+        last_login=current_user.last_login
+    )
+
+@api_router.post("/auth/logout")
+async def logout(current_user: User = Depends(get_current_user)):
+    # Mettre à jour le statut hors ligne
+    await db.users.update_one(
+        {"username": current_user.username},
+        {"$set": {"is_online": False}}
+    )
+    return {"message": "Déconnexion réussie"}
+
+# User management endpoints
+@api_router.get("/users/search/{username}")
+async def search_user(username: str, current_user: User = Depends(get_current_user)):
+    user = await db.users.find_one({"username": {"$regex": username, "$options": "i"}})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    return UserProfile(
+        id=user["id"],
+        username=user["username"],
+        stats=user["stats"],
+        is_online=user.get("is_online", False),
+        last_login=user.get("last_login")
+    )
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
