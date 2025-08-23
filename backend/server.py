@@ -579,6 +579,193 @@ async def search_user(username: str, current_user: User = Depends(get_current_us
         last_login=user.get("last_login")
     )
 
+@api_router.post("/user/add-friend")
+async def add_friend(friend_username: str, current_user: User = Depends(get_current_user)):
+    """Ajoute un ami à la liste d'amis de l'utilisateur"""
+    if friend_username == current_user.username:
+        raise HTTPException(status_code=400, detail="Vous ne pouvez pas vous ajouter vous-même")
+    
+    # Vérifier que l'ami existe
+    friend = await db.users.find_one({"username": friend_username})
+    if not friend:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    # Vérifier que l'ami n'est pas déjà dans la liste
+    if friend_username in current_user.friends:
+        raise HTTPException(status_code=400, detail="Cet utilisateur est déjà votre ami")
+    
+    # Ajouter l'ami
+    await db.users.update_one(
+        {"username": current_user.username},
+        {"$push": {"friends": friend_username}}
+    )
+    
+    return {"message": f"{friend_username} ajouté à vos amis"}
+
+@api_router.get("/user/friends")
+async def get_friends(current_user: User = Depends(get_current_user)):
+    """Récupère la liste des amis avec leurs stats"""
+    friends_data = []
+    
+    for friend_username in current_user.friends:
+        friend = await db.users.find_one({"username": friend_username})
+        if friend:
+            friends_data.append(UserProfile(
+                id=friend["id"],
+                username=friend["username"],
+                stats=friend["stats"],
+                is_online=friend.get("is_online", False),
+                last_login=friend.get("last_login")
+            ))
+    
+    return friends_data
+
+@api_router.delete("/user/remove-friend")
+async def remove_friend(friend_username: str, current_user: User = Depends(get_current_user)):
+    """Retire un ami de la liste d'amis"""
+    if friend_username not in current_user.friends:
+        raise HTTPException(status_code=404, detail="Cet utilisateur n'est pas votre ami")
+    
+    await db.users.update_one(
+        {"username": current_user.username},
+        {"$pull": {"friends": friend_username}}
+    )
+    
+    return {"message": f"{friend_username} retiré de vos amis"}
+
+# Club endpoints
+class ClubCreate(BaseModel):
+    name: str
+    description: str = ""
+
+class Club(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str = ""
+    owner: str
+    members: List[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    max_members: int = 20
+
+@api_router.post("/clubs/create")
+async def create_club(club_data: ClubCreate, current_user: User = Depends(get_current_user)):
+    """Crée un nouveau club"""
+    if current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous êtes déjà membre d'un club")
+    
+    # Vérifier que le nom n'existe pas déjà
+    existing = await db.clubs.find_one({"name": club_data.name})
+    if existing:
+        raise HTTPException(status_code=400, detail="Ce nom de club existe déjà")
+    
+    club = Club(
+        name=club_data.name,
+        description=club_data.description,
+        owner=current_user.username,
+        members=[current_user.username]
+    )
+    
+    # Créer le club
+    await db.clubs.insert_one(club.dict())
+    
+    # Mettre à jour l'utilisateur
+    await db.users.update_one(
+        {"username": current_user.username},
+        {"$set": {"club_id": club.id}}
+    )
+    
+    return {"message": f"Club '{club_data.name}' créé", "club": club}
+
+@api_router.get("/clubs/search/{name}")
+async def search_clubs(name: str, current_user: User = Depends(get_current_user)):
+    """Recherche des clubs par nom"""
+    clubs = await db.clubs.find({"name": {"$regex": name, "$options": "i"}}).to_list(10)
+    return [Club(**club) for club in clubs]
+
+@api_router.post("/clubs/join/{club_id}")
+async def join_club(club_id: str, current_user: User = Depends(get_current_user)):
+    """Rejoint un club"""
+    if current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous êtes déjà membre d'un club")
+    
+    club = await db.clubs.find_one({"id": club_id})
+    if not club:
+        raise HTTPException(status_code=404, detail="Club non trouvé")
+    
+    if len(club["members"]) >= club["max_members"]:
+        raise HTTPException(status_code=400, detail="Le club est plein")
+    
+    # Ajouter le membre au club
+    await db.clubs.update_one(
+        {"id": club_id},
+        {"$push": {"members": current_user.username}}
+    )
+    
+    # Mettre à jour l'utilisateur
+    await db.users.update_one(
+        {"username": current_user.username},
+        {"$set": {"club_id": club_id}}
+    )
+    
+    return {"message": f"Vous avez rejoint le club '{club['name']}'"}
+
+@api_router.get("/user/club")
+async def get_user_club(current_user: User = Depends(get_current_user)):
+    """Récupère les informations du club de l'utilisateur"""
+    if not current_user.club_id:
+        return {"message": "Vous n'êtes membre d'aucun club"}
+    
+    club = await db.clubs.find_one({"id": current_user.club_id})
+    if not club:
+        return {"message": "Club non trouvé"}
+    
+    # Récupérer les infos des membres
+    members_data = []
+    for member_username in club["members"]:
+        member = await db.users.find_one({"username": member_username})
+        if member:
+            members_data.append(UserProfile(
+                id=member["id"],
+                username=member["username"],
+                stats=member["stats"],
+                is_online=member.get("is_online", False),
+                last_login=member.get("last_login")
+            ))
+    
+    return {
+        "club": Club(**club),
+        "members": members_data
+    }
+
+@api_router.post("/clubs/leave")
+async def leave_club(current_user: User = Depends(get_current_user)):
+    """Quitte le club actuel"""
+    if not current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous n'êtes membre d'aucun club")
+    
+    club = await db.clubs.find_one({"id": current_user.club_id})
+    if not club:
+        raise HTTPException(status_code=404, detail="Club non trouvé")
+    
+    # Retirer l'utilisateur du club
+    await db.clubs.update_one(
+        {"id": current_user.club_id},
+        {"$pull": {"members": current_user.username}}
+    )
+    
+    # Supprimer le club s'il n'y a plus de membres
+    updated_club = await db.clubs.find_one({"id": current_user.club_id})
+    if not updated_club["members"]:
+        await db.clubs.delete_one({"id": current_user.club_id})
+    
+    # Mettre à jour l'utilisateur
+    await db.users.update_one(
+        {"username": current_user.username},
+        {"$unset": {"club_id": ""}}
+    )
+    
+    return {"message": "Vous avez quitté le club"}
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
