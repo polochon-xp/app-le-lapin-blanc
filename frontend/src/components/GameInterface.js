@@ -16,6 +16,8 @@ import {
   BookOpen, 
   Brain,
   CalendarDays,
+  Users,
+  MapPin,
   Clock, 
   Settings, 
   Play,
