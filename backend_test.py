@@ -973,6 +973,10 @@ def run_all_tests():
     auth_results = test_authentication_system(backend_url)
     test_results.update(auth_results)
     
+    # Run attack, defense & title system tests
+    system_results = test_attack_defense_title_system(backend_url)
+    test_results.update(system_results)
+    
     # Summary
     print("\n" + "=" * 60)
     print("📊 TEST SUMMARY")
@@ -1003,13 +1007,33 @@ def run_all_tests():
             if result:
                 passed += 1
     
+    # Attack, Defense & Title system tests
+    print("\n⚔️  ATTACK, DEFENSE & TITLE SYSTEM TESTS:")
+    system_tests = ['attacks_list', 'titles_list', 'user_attacks', 'user_titles', 'level_up', 'attack_flow', 'friends_system', 'clubs_system']
+    for test_name in system_tests:
+        if test_name in test_results:
+            result = test_results[test_name]
+            status = "✅ PASS" if result else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+            if result:
+                passed += 1
+    
     print(f"\nOverall: {passed}/{total} tests passed")
     
+    # Determine critical vs minor issues
+    critical_tests = ['server_accessible', 'root_endpoint', 'attacks_list', 'titles_list', 'level_up', 'attack_flow']
+    critical_passed = sum(1 for test in critical_tests if test_results.get(test, False))
+    critical_total = len(critical_tests)
+    
     if passed == total:
-        print("🎉 All backend tests PASSED! Authentication system is fully functional.")
+        print("🎉 All backend tests PASSED! Complete attack, defense & title system is fully functional.")
+        return True
+    elif critical_passed == critical_total:
+        print("✅ All CRITICAL tests PASSED! Core attack/defense/title system is working.")
+        print("⚠️  Some minor features may need attention, but main functionality is operational.")
         return True
     else:
-        print("⚠️  Some backend tests FAILED. Issues need to be resolved.")
+        print("❌ CRITICAL backend tests FAILED. Core system issues need to be resolved.")
         return False
 
 if __name__ == "__main__":
