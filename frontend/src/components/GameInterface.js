@@ -104,8 +104,6 @@ const GameInterface = () => {
   const [player, setPlayer] = useState(gameState.player);
   const [stats, setStats] = useState(gameState.stats);
   const [missions, setMissions] = useState(gameState.missions);
-  const [discoveries, setDiscoveries] = useState(gameState.discoveries);
-  const [artifacts, setArtifacts] = useState(gameState.artifacts);
   const [categories, setCategories] = useState(gameState.categories);
   const [selectedDate, setSelectedDate] = useState(gameState.selectedDate);
   const [showCalendar, setShowCalendar] = useState(false);
