@@ -18,7 +18,15 @@ export const AuthProvider = ({ children }) => {
 
   // Vérifier l'authentification au chargement
   useEffect(() => {
-    checkAuthStatus();
+    // Ajouter un timeout pour éviter un blocage infini
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      console.warn('Timeout de vérification d\'authentification');
+    }, 5000);
+
+    checkAuthStatus().finally(() => {
+      clearTimeout(timeoutId);
+    });
   }, []);
 
   const checkAuthStatus = async () => {
