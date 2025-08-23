@@ -269,15 +269,18 @@ backend:
 
   - task: "GET /api/titles - Liste des titres disponibles"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Retourne tous les titres disponibles selon les niveaux requis (Novice lv1, Initié lv5, Disciple lv10, etc.)"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/titles fonctionne parfaitement. Retourne exactement 9 titres avec progression correcte: Novice (lv1), Initié (lv5), Disciple (lv10), Combattant (lv20), Érudit (lv30), Stratège (lv40), Maître (lv50), Champion (lv75), Légende (lv100). Structure complète validée."
 
   - task: "GET /api/user/titles - Titres de l'utilisateur"
     implemented: true
