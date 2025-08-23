@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Teste le backend FastAPI de l'application RPG 'Le Lapin Blanc'. Le backend doit avoir : 1. Endpoint racine /api/ qui retourne un statut de santé, 2. Endpoint /api/status pour vérifier l'état du serveur, 3. Vérifier la connectivité MongoDB si configurée, 4. Assurer que le serveur répond correctement sur port 8001, 5. Confirmer que tous les endpoints API sont accessibles depuis le frontend"
+user_problem_statement: "Tester le nouveau système d'authentification backend pour l'application 'Le Lapin Blanc' : Nouveaux endpoints à tester : 1. Inscription utilisateur - POST /api/auth/register, 2. Connexion utilisateur - POST /api/auth/login, 3. Profil utilisateur - GET /api/auth/me, 4. Recherche utilisateur - GET /api/users/search/testuser, 5. Déconnexion - POST /api/auth/logout. Points importants à vérifier : noms d'utilisateur uniques, stats ELO initialisées à 1200, tokens JWT valides, base MongoDB fonctionnelle."
 
 backend:
   - task: "Endpoint racine /api/ pour statut de santé"
@@ -164,6 +164,66 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ TESTÉ: Tous les endpoints API parfaitement accessibles depuis frontend. CORS configuré correctement, requêtes cross-origin fonctionnelles. URL REACT_APP_BACKEND_URL utilisée avec succès."
+
+  - task: "Inscription utilisateur POST /api/auth/register"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint d'inscription fonctionne parfaitement. Retourne token JWT valide, utilisateur créé en base avec stats ELO à 1200 pour toutes catégories (travail, sport, création, lecture, adaptabilité). Contraintes d'unicité username/email validées."
+
+  - task: "Connexion utilisateur POST /api/auth/login"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint de connexion fonctionne parfaitement. Retourne token JWT valide, met à jour is_online à true et last_login timestamp. Authentification sécurisée avec bcrypt."
+
+  - task: "Profil utilisateur GET /api/auth/me"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint profil utilisateur fonctionne parfaitement. Retourne infos utilisateur complètes avec stats ELO (1200 pour chaque catégorie), statut is_online, et authentification JWT sécurisée."
+
+  - task: "Recherche utilisateur GET /api/users/search/{username}"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint recherche utilisateur fonctionne parfaitement. Trouve utilisateur créé avec recherche regex insensible à la casse, retourne profil complet avec authentification JWT requise."
+
+  - task: "Déconnexion POST /api/auth/logout"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint déconnexion fonctionne parfaitement. Met à jour is_online à false, retourne message de confirmation, authentification JWT sécurisée."
 
 frontend:
   - task: "Interface retro gaming avec thème orange/noir"
