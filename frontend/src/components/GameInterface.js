@@ -54,6 +54,9 @@ import {
 import { themes } from '../data/themes';
 
 const GameInterface = () => {
+  const { isAuthenticated, user, loading, login } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   // Initialisation avec données sauvegardées ou par défaut
   const initializeGameState = () => {
     try {
