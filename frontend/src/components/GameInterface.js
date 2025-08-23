@@ -1128,6 +1128,23 @@ const GameInterface = () => {
           overflow: hidden;
         }
       `}</style>
+
+      {/* Modal d'authentification */}
+      <AuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onAuthSuccess={handleAuthSuccess}
+        currentTheme={currentTheme}
+      />
+
+      {/* Modal de profil utilisateur */}
+      {isAuthenticated && (
+        <UserProfile 
+          currentTheme={currentTheme}
+          showProfile={showProfile}
+          setShowProfile={setShowProfile}
+        />
+      )}
     </div>
   );
 };
