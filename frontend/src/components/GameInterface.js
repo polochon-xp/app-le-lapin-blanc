@@ -889,118 +889,35 @@ const GameInterface = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="discoveries" className="space-y-3">
-            {discoveries.length === 0 ? (
-              <Card className="border-0 bg-black/40 backdrop-blur-sm">
-                <CardContent className="p-6 text-center">
-                  <ScrollText className="w-12 h-12 mx-auto mb-3 opacity-50" 
-                              style={{ color: currentTheme.primaryColor }} />
-                  <p className="text-sm text-gray-400 mb-2">Aucune découverte</p>
-                  <p className="text-xs text-gray-500">Progressez pour débloquer des indices</p>
-                </CardContent>
-              </Card>
-            ) : (
-              discoveries.map(discovery => (
-                <Card key={discovery.id} className="border-0 bg-black/40 backdrop-blur-sm">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-medium text-sm" style={{ color: currentTheme.textColor }}>
-                        {discovery.title}
-                      </h4>
-                      <div className="flex space-x-1">
-                        {discovery.isNew && (
-                          <Badge className="text-xs px-2 py-0 border-0" 
-                                 style={{ backgroundColor: currentTheme.primaryColor, color: 'black' }}>
-                            NOUVEAU
-                          </Badge>
-                        )}
-                        <Badge variant="outline" className="text-xs px-2 py-0 border-0"
-                               style={{ 
-                                 backgroundColor: discovery.rarity === 'legendary' ? '#ffd700' + '20' :
-                                                 discovery.rarity === 'rare' ? '#ff6b9d' + '20' : '#4ecdc4' + '20',
-                                 color: discovery.rarity === 'legendary' ? '#ffd700' :
-                                        discovery.rarity === 'rare' ? '#ff6b9d' : '#4ecdc4'
-                               }}>
-                          {discovery.rarity.toUpperCase()}
-                        </Badge>
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-400">{discovery.description}</p>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="artifacts" className="space-y-3">
-            {artifacts.length === 0 ? (
-              <Card className="border-0 bg-black/40 backdrop-blur-sm">
-                <CardContent className="p-6 text-center">
-                  <Package className="w-12 h-12 mx-auto mb-3 opacity-50" 
-                           style={{ color: currentTheme.primaryColor }} />
-                  <p className="text-sm text-gray-400 mb-2">Aucun artefact</p>
-                  <p className="text-xs text-gray-500">Terminez des missions pour en trouver</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 gap-3">
-                {artifacts.map(artifact => (
-                  <Card key={artifact.id} className="border-0 bg-black/40 backdrop-blur-sm">
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-medium text-sm" style={{ color: currentTheme.textColor }}>
-                          {artifact.name}
-                        </h4>
-                        <Badge variant="outline" className="text-xs px-2 py-0 border-0"
-                               style={{ 
-                                 backgroundColor: artifact.rarity === 'legendary' ? '#ffd700' + '20' :
-                                                 artifact.rarity === 'rare' ? '#ff6b9d' + '20' : '#4ecdc4' + '20',
-                                 color: artifact.rarity === 'legendary' ? '#ffd700' :
-                                        artifact.rarity === 'rare' ? '#ff6b9d' : '#4ecdc4'
-                               }}>
-                          {artifact.rarity.toUpperCase()}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-gray-400 mb-2">{artifact.description}</p>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <Package className="w-3 h-3 mr-1" />
-                        {artifact.category}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="story" className="space-y-3">
+          <TabsContent value="friends" className="space-y-3">
             <Card className="border-0 bg-black/40 backdrop-blur-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base" style={{ color: currentTheme.primaryColor }}>
-                  Journal de l'Enquête
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="border-l-4 pl-4" style={{ borderColor: currentTheme.primaryColor }}>
-                    <h3 className="font-medium mb-2 text-sm" style={{ color: currentTheme.textColor }}>
-                      Niveau {player.level} - L'Éveil
-                    </h3>
-                    <p className="text-gray-400 text-xs leading-relaxed">
-                      {player.level === 1 ? 
-                        "Vous vous réveillez dans un monde où quelque chose a changé. Les écrans clignotent partout, les gens semblent anxieux. Un message cryptique apparaît : 'Le compte à rebours a commencé...'" :
-                        "Continuez votre progression pour débloquer plus de fragments de l'histoire du Dr. Chen et du mystérieux Compound-X..."
-                      }
-                    </p>
-                  </div>
-                  
-                  <div className="text-center py-6">
-                    <ScrollText className="w-10 h-10 mx-auto mb-3" style={{ color: currentTheme.accentColor }} />
-                    <p className="text-gray-500 text-xs">
-                      Progressez pour débloquer plus de fragments...
-                    </p>
-                  </div>
-                </div>
+              <CardContent className="p-6 text-center">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" 
+                       style={{ color: currentTheme.primaryColor }} />
+                <p className="text-sm text-gray-400 mb-2">Amis / Club</p>
+                <p className="text-xs text-gray-500">Fonctionnalité en cours de développement</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="map" className="space-y-3">
+            <Card className="border-0 bg-black/40 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <MapPin className="w-12 h-12 mx-auto mb-3 opacity-50" 
+                        style={{ color: currentTheme.primaryColor }} />
+                <p className="text-sm text-gray-400 mb-2">Carte</p>
+                <p className="text-xs text-gray-500">Fonctionnalité en cours de développement</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="titles" className="space-y-3">
+            <Card className="border-0 bg-black/40 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <Trophy className="w-12 h-12 mx-auto mb-3 opacity-50" 
+                        style={{ color: currentTheme.primaryColor }} />
+                <p className="text-sm text-gray-400 mb-2">Titres</p>
+                <p className="text-xs text-gray-500">Fonctionnalité en cours de développement</p>
               </CardContent>
             </Card>
           </TabsContent>
