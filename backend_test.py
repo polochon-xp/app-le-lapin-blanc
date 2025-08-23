@@ -923,9 +923,10 @@ def test_authentication_system(base_url):
     
     auth_results = {}
     token = None
+    username = None
     
     # Test registration
-    success, token = test_user_registration(base_url)
+    success, token, username = test_user_registration(base_url)
     auth_results['registration'] = success
     
     if not success:
@@ -933,15 +934,15 @@ def test_authentication_system(base_url):
         return auth_results
     
     # Test login (get fresh token)
-    success, login_token = test_user_login(base_url)
+    success, login_token = test_user_login(base_url, username)
     auth_results['login'] = success
     if success and login_token:
         token = login_token  # Use login token for subsequent tests
     
     # Test profile retrieval
-    if token:
-        auth_results['profile'] = test_user_profile(base_url, token)
-        auth_results['user_search'] = test_user_search(base_url, token)
+    if token and username:
+        auth_results['profile'] = test_user_profile(base_url, token, username)
+        auth_results['user_search'] = test_user_search(base_url, token, username)
         auth_results['logout'] = test_user_logout(base_url, token)
     else:
         print("❌ No valid token - skipping profile, search, and logout tests")
