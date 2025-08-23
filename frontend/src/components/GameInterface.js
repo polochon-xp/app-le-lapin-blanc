@@ -499,6 +499,30 @@ const GameInterface = () => {
     console.log(`✅ Mission "${mission.title}" terminée ! +5 XP ${mission.category}, +10 Santé`);
   };
 
+  // Fonction pour calculer les changements d'ELO (système standard échecs)
+  const calculateEloChange = (playerElo, opponentElo, result, kFactor = 32) => {
+    // result: 1 = victoire, 0.5 = égalité, 0 = défaite
+    const expectedScore = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));
+    return Math.round(kFactor * (result - expectedScore));
+  };
+
+  // Fonction pour appliquer un changement d'ELO à une catégorie
+  const updateElo = (categoryId, eloChange) => {
+    setStats(prevStats => {
+      const newStats = { ...prevStats };
+      if (newStats[categoryId]) {
+        const currentElo = newStats[categoryId].elo || 1200;
+        const newElo = Math.max(100, currentElo + eloChange); // ELO minimum de 100
+        newStats[categoryId] = {
+          ...newStats[categoryId],
+          elo: newElo
+        };
+        console.log(`📊 ELO ${categoryId}: ${currentElo} → ${newElo} (${eloChange > 0 ? '+' : ''}${eloChange})`);
+      }
+      return newStats;
+    });
+  };
+
   // Nouvelle fonction pour ajouter XP à une catégorie avec progression infinie
   const addXPToCategory = (categoryId, xpAmount) => {
     setStats(prevStats => {
