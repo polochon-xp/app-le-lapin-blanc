@@ -32,6 +32,53 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Static game data
+ATTACKS_DATA = [
+    {"id": 1, "name": "Frappe éclair", "description": "Une attaque rapide qui réduit temporairement une stat ciblée", "effect_type": "stat_reduce", "effect_value": 10, "duration_hours": 24},
+    {"id": 2, "name": "Brèche mentale", "description": "Diminue la concentration d'un adversaire pour 24h", "effect_type": "concentration_loss", "effect_value": 15, "duration_hours": 24},
+    {"id": 3, "name": "Blocage d'énergie", "description": "Vide une partie de la jauge d'énergie adverse", "effect_type": "energy_drain", "effect_value": 30, "duration_hours": 0},
+    {"id": 4, "name": "Fardeau caché", "description": "Ajoute un handicap de progression sur une mission", "effect_type": "mission_handicap", "effect_value": 50, "duration_hours": 24},
+    {"id": 5, "name": "Piège temporel", "description": "Retarde l'effet des missions accomplies de 12h", "effect_type": "mission_delay", "effect_value": 12, "duration_hours": 12},
+    {"id": 6, "name": "Drain d'effort", "description": "Réduit de 10% l'EXP gagnée par l'ennemi ce jour", "effect_type": "exp_reduction", "effect_value": 10, "duration_hours": 24},
+    {"id": 7, "name": "Surcharge", "description": "L'adversaire doit dépenser 2 missions pour en valider 1", "effect_type": "mission_cost", "effect_value": 2, "duration_hours": 24},
+    {"id": 8, "name": "Confusion", "description": "Réduit aléatoirement une stat (sport, travail, etc.)", "effect_type": "random_stat_loss", "effect_value": 5, "duration_hours": 24},
+    {"id": 9, "name": "Silence", "description": "Empêche l'usage d'une attaque dans une stat pendant 24h", "effect_type": "attack_block", "effect_value": 1, "duration_hours": 24},
+    {"id": 10, "name": "Malédiction", "description": "L'adversaire perd 5 ELO à minuit", "effect_type": "elo_loss", "effect_value": 5, "duration_hours": 0},
+    # Ajout des 40 autres attaques...
+    {"id": 11, "name": "Douleur résiduelle", "description": "Réduit les PV du joueur attaqué de 10%", "effect_type": "health_percentage", "effect_value": 10, "duration_hours": 0},
+    {"id": 12, "name": "Brise-armure", "description": "Diminue l'effet d'un badge de défense", "effect_type": "defense_break", "effect_value": 1, "duration_hours": 24},
+    {"id": 13, "name": "Poison lent", "description": "-2 ELO par jour pendant 3 jours", "effect_type": "elo_poison", "effect_value": 2, "duration_hours": 72},
+    {"id": 14, "name": "Fissure intérieure", "description": "Annule la prochaine mission validée", "effect_type": "mission_cancel", "effect_value": 1, "duration_hours": 24},
+    {"id": 15, "name": "Voleur d'âme", "description": "Vole 5 ELO d'un adversaire", "effect_type": "elo_steal", "effect_value": 5, "duration_hours": 0},
+    # ... (continuer avec les 35 autres)
+    {"id": 50, "name": "Ruine", "description": "Réinitialise l'énergie de l'ennemi à zéro", "effect_type": "energy_reset", "effect_value": 0, "duration_hours": 0}
+]
+
+DEFENSES_DATA = [
+    {"id": 1, "name": "Bouclier de fer", "description": "Annule la première attaque reçue chaque jour", "protection_type": "attack_block", "effect_value": 1},
+    {"id": 2, "name": "Aura protectrice", "description": "Réduit de moitié les effets des malédictions", "protection_type": "curse_reduce", "effect_value": 50},
+    {"id": 3, "name": "Régénération", "description": "Rend 5 PV à chaque mission validée", "protection_type": "health_regen", "effect_value": 5},
+    {"id": 4, "name": "Mur de volonté", "description": "Empêche les pertes d'ELO pendant 24h", "protection_type": "elo_immunity", "effect_value": 24},
+    {"id": 5, "name": "Armure d'esprit", "description": "Immunité à une stat (choisie)", "protection_type": "stat_immunity", "effect_value": 1},
+    {"id": 6, "name": "Grâce divine", "description": "Une attaque reçue est renvoyée à l'expéditeur", "protection_type": "reflect", "effect_value": 1},
+    {"id": 7, "name": "Esprit combatif", "description": "Chaque attaque subie donne +1 ELO", "protection_type": "elo_gain", "effect_value": 1},
+    {"id": 8, "name": "Stabilité", "description": "Les missions ne peuvent plus être annulées", "protection_type": "mission_immunity", "effect_value": 1},
+    {"id": 9, "name": "Gardien", "description": "Bloque toutes les attaques liées à l'énergie", "protection_type": "energy_immunity", "effect_value": 1},
+    {"id": 10, "name": "Ancre de réalité", "description": "Neutralise les effets aléatoires", "protection_type": "random_immunity", "effect_value": 1}
+]
+
+TITLES_DATA = [
+    {"level_required": 1, "name": "Novice", "description": "Découvre le système, gains normaux", "bonus_type": "none", "bonus_value": 0},
+    {"level_required": 5, "name": "Initié", "description": "+1% gains sur toutes missions", "bonus_type": "all_missions", "bonus_value": 1},
+    {"level_required": 10, "name": "Disciple", "description": "Peut stocker 2 cartes d'attaque", "bonus_type": "attack_storage", "bonus_value": 2},
+    {"level_required": 20, "name": "Combattant", "description": "+2% gains en sport et travail", "bonus_type": "sport_travail", "bonus_value": 2},
+    {"level_required": 30, "name": "Érudit", "description": "Bonus +2% en lecture et création", "bonus_type": "lecture_creation", "bonus_value": 2},
+    {"level_required": 40, "name": "Stratège", "description": "Peut bloquer une stat ennemie 1 fois/semaine", "bonus_type": "stat_block", "bonus_value": 1},
+    {"level_required": 50, "name": "Maître", "description": "+5% sur toutes missions", "bonus_type": "all_missions", "bonus_value": 5},
+    {"level_required": 75, "name": "Champion", "description": "Annule une attaque aléatoire par jour", "bonus_type": "attack_immunity", "bonus_value": 1},
+    {"level_required": 100, "name": "Légende", "description": "+10% sur toutes missions et immunité 1 fois/semaine", "bonus_type": "legend", "bonus_value": 10}
+]
+
 # Create the main app without a prefix
 app = FastAPI()
 
