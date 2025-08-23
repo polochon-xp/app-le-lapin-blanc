@@ -1,0 +1,94 @@
+<analysis>
+The previous AI engineer successfully initiated a full-stack gamification app, Le Lapin Blanc, using React, FastAPI, and MongoDB. Initial work focused on core UI and mock data, but faced persistent Optimization tab and data persistence issues. A major pivot occurred, first attempting mobile app conversion, then removing all narrative elements (story, artifacts, journal) to replace them with social features (Friends/Club, Map, Titles). The AI engineer meticulously refactored the frontend, fixed critical display bugs (ESLint, theme import, duplicate components), and implemented ELO into player stats. The most recent work involved building a robust backend authentication system, which was successfully tested, and integrating static data models for a new attack/defense and titles system. The trajectory ends with the engineer preparing to add FastAPI endpoints for these attack mechanics.
+</analysis>
+
+<product_requirements>
+The user requested Le Lapin Blanc, a gamification application where players level up by completing missions, gaining XP, and improving stats. The application initially featured a narrative about a missing scientist and an immortality drug, but this was later completely removed. The current core requirements are:
+
+*   **Gamification Core**: Missions with recurrence, custom categories, XP rewards/penalties, infinite progression, health/energy mechanics, and an automatic daily reset system.
+*   **Stats**: Each player stat (Travail, Sport, Création, Lecture, Adaptabilité) includes an ELO rating (initial 1200, K=32, public visibility).
+*   **UI/UX**: Single-page Terminal/Laboratoire layout, brighter/contrasting colors, missions displayed as tags/cards with full description modals, a floating mini-agenda/calendar for missions, and stylized icons.
+*   **Online/Offline Mode**: User accounts with unique usernames, simple email/password authentication, and the ability to sync local and server data.
+*   **Social Features**: New tabs for Ami/Club (player search, friend stats, club creation/joining), Carte (empty for now), and Titres (displaying achievements).
+*   **Attack/Defense System**: A card-based system where players gain random attack/defense cards per level. Attacks penalize other players' stats/ELO, are applied immediately, appear to victims at midnight/login, are limited to one per stat per day, and prevent defending the attacked stat.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Full-stack Architecture**: React (frontend), FastAPI (backend), MongoDB (database).
+-   **Frontend State Management**: , .
+-   **UI/UX**: Tailwind CSS, Shadcn UI, , custom CSS.
+-   **Data Handling**: Mock data (), local storage, backend API.
+-   **Authentication**: JWT tokens,  for password hashing.
+-   **Game Mechanics**: ELO rating system, mission system, player stats.
+</key_technical_concepts>
+
+<code_architecture>
+The application is structured as a full-stack project with separate  (React) and  (FastAPI) directories.
+
+
+
+-   ****: FastAPI entry point.
+    *   **Summary of why this file is important**: This is the core of the backend, handling API routes, database interactions, and business logic.
+    *   **Summary of changes**: Significantly extended to include user authentication (registration, login, profile, search) using JWT and bcrypt. User models now include ELO stats. Static data for 50 attack types, 10 defense badges, and player titles has been integrated.
+-   ****: Python dependencies for the backend.
+    *   **Summary of why this file is important**: Ensures all necessary Python libraries are installed for the backend to run.
+    *   **Summary of changes**:  was added for password hashing.
+-   ****: Main React component.
+    *   **Summary of why this file is important**: The main entry point for the React application, responsible for rendering .
+    *   **Summary of changes**: No direct modifications in this trajectory, but it orchestrates the main UI.
+-   ****: Stores mock data.
+    *   **Summary of why this file is important**: Provides initial and mock data for player stats, missions, and other game elements.
+    *   **Summary of changes**: Narrative-related mock data (discoveries, artifacts, story) was removed.  was added to each mock stat to support the new ELO system.
+-   ****: Defines application color themes.
+    *   **Summary of why this file is important**: Centralizes theme definitions, allowing for consistent UI styling.
+    *   **Summary of changes**: Created earlier for graphic enhancements, remains unchanged recently.
+-   ****: The central React component managing the game's UI, state, and many functionalities.
+    *   **Summary of why this file is important**: It renders the main game layout, handles tab navigation, displays player stats, missions, and integrates most game logic.
+    *   **Summary of changes**: This file underwent extensive modifications:
+        *   Fixed ESLint parsing errors and corrected a theme import path, resolving a blank screen issue.
+        *   Removed  component usage.
+        *   Refactored the Missions tab to use new , , and  components.
+        *   Implemented logic for mission recurrence, completion states, and custom categories.
+        *   Added graphical adjustments (shimmer effects, updated icons for calendar, vivid stat bar colors).
+        *   Removed all logic, state variables, and imports related to previous narrative tabs (, , ).
+        *   Replaced the old narrative tabs with empty  components for new Ami / Club, Carte, and Titres tabs.
+        *   Integrated ELO display () and calculation functions for each stat.
+        *   Added , , , , and  icon imports.
+-   ****: Component displaying learning techniques.
+    *   **Summary of why this file is important**: Contains the UI and logic for the cognitive optimization features.
+    *   **Summary of changes**: Its functionality remains preserved and untouched.
+-   ****: Dialog for creating new missions.
+    *   **Summary of why this file is important**: Enables users to add and customize their missions.
+    *   **Summary of changes**: Corrected ESLint parsing errors related to malformed array declarations.
+-   ****: Component to display individual missions as cards.
+    *   **Summary of why this file is important**: Provides the visual representation for missions in the Missions tab.
+    *   **Summary of changes**: Newly created. Added robust null checks for mission properties (e.g., dates) and was enhanced to display stylized crosses on completion.
+-   ****: Modal for showing full mission descriptions.
+    *   **Summary of why this file is important**: Allows users to view detailed information about a mission.
+    *   **Summary of changes**: Newly created. Added robust null checks for mission properties and support for new timer functionalities.
+-   ****: Component for the floating mini-agenda/calendar.
+    *   **Summary of why this file is important**: Provides a visual calendar for selecting days and filtering missions.
+    *   **Summary of changes**: Newly created and integrated into the .
+</code_architecture>
+
+<pending_tasks>
+-   **Backend API for Attack/Defense System**: Implement FastAPI endpoints to handle attack/defense logic, including applying penalties and managing card usage.
+-   **Backend API for Titles**: Create FastAPI endpoints for managing and assigning player titles based on in-game achievements.
+-   **Frontend UI for Authentication**: Create the user interface for registration and login screens.
+-   **Frontend UI for Social Features**: Implement the UI for the Ami/Club tab, including player search, adding friends, displaying friend statistics, and club management.
+-   **Frontend UI for Titles**: Develop the user interface for the Titres tab to display a player's earned titles.
+-   **Frontend UI for Attack/Defense System**: Implement the UI for the Attacks tab, allowing players to view, select, and use attack/defense cards.
+-   **Online/Offline Mode Logic**: Develop the client-side logic to handle switching between online/offline modes and data synchronization.
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the AI engineer completed the robust backend authentication system for the Le Lapin Blanc application. This included implementing secure user registration, login, profile retrieval, and user search functionalities within  using FastAPI. The system now supports unique usernames, hashes passwords with , and utilizes JWT tokens for secure sessions. This entire authentication backend was thoroughly tested and confirmed as fully functional.
+
+On the frontend, the ELO rating system has been successfully integrated visually, with ELO: 1200 displayed next to each player stat. The previous narrative elements have been completely removed, and new empty tabs for Ami / Club, Carte, and Titres are in place, ready for their respective UI development.
+
+The user then provided comprehensive static data for 50 attack types, 10 defense badges, and player titles, including their effects and conditions. The AI engineer has begun the process of integrating these into the backend by creating data models and adding the static data structures directly within . The last action in the trajectory was to Maintenant remettons le code FastAPI et ajoutons les endpoints pour les attaques, indicating that the work is currently focused on building out the API endpoints to manage these attack mechanics.
+</current_work>
+
+<optional_next_step>
+Implement the FastAPI endpoints for managing attacks, defenses, and titles.
+</optional_next_step>
