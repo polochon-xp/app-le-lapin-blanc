@@ -179,15 +179,18 @@ backend:
 
   - task: "GET /api/attacks - Liste des 50 attaques disponibles"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Implémenté avec les 50 attaques complètes incluant leurs effets, valeurs et durées. Chaque attaque a un type d'effet spécifique (elo_loss, energy_drain, etc.)"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/attacks fonctionne parfaitement. Retourne exactement 50 attaques avec structure complète (id, name, description, effect_type, effect_value, duration_hours). Exemple: 'Frappe éclair' - effet stat_reduce (10) pour 24h. Toutes les attaques sont bien formatées et complètes."
 
   - task: "GET /api/user/attacks - Attaques disponibles de l'utilisateur"
     implemented: true
