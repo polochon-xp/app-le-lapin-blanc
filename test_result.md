@@ -254,15 +254,18 @@ backend:
 
   - task: "POST /api/user/apply-pending-attacks - Appliquer les effets"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Applique tous les effets d'attaques en attente: réduction ELO, perte de PV, drain d'énergie selon le type d'attaque"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/apply-pending-attacks fonctionne parfaitement. Application réussie des effets d'attaque 'Entrave physique' avec détails complets (attack_name, attacker, effect). Total de 1 attaque appliquée. Système d'application des effets opérationnel."
 
   - task: "GET /api/titles - Liste des titres disponibles"
     implemented: true
