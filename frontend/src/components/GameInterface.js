@@ -322,11 +322,16 @@ const GameInterface = () => {
           <Icon className="w-4 h-4" style={{ color: categoryColor }} />
         </div>
         <div className="flex-1">
-          <div className="flex justify-between text-sm">
-            <span style={{ color: currentTheme.textColor }} className="font-bold pixel-font">
-              {getStatName(category)}
-              <span className="ml-2 text-xs opacity-70">LV.{data.level}</span>
-            </span>
+          <div className="flex justify-between items-center text-sm">
+            <div className="flex flex-col">
+              <span style={{ color: currentTheme.textColor }} className="font-bold pixel-font">
+                {getStatName(category)}
+                <span className="ml-2 text-xs opacity-70">LV.{data.level}</span>
+              </span>
+              <span className="text-xs font-bold mt-1" style={{ color: categoryColor }}>
+                ELO: {data.elo || 1200}
+              </span>
+            </div>
             <span className="text-gray-300 text-xs font-bold">{data.xp}/{data.maxXp}</span>
           </div>
           <div className="mt-2 relative">
