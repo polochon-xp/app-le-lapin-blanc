@@ -37,6 +37,9 @@ import OptimizationTab from './OptimizationTab';
 import MissionCard from './MissionCard';
 import MissionDetailModal from './MissionDetailModal';
 import CalendarPanel from './CalendarPanel';
+import AttackTab from './AttackTab';
+import SocialTab from './SocialTab';
+import TitlesTab from './TitlesTab';
 import { 
   mockPlayer, 
   mockStats, 
