@@ -299,15 +299,18 @@ backend:
 
   - task: "POST /api/user/select-title - Choisir un titre"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Permet de sélectionner un titre débloqué comme titre actuel de l'utilisateur"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/select-title implémenté et fonctionnel. Validation du niveau requis et sélection de titre opérationnelle. Testé indirectement via système de titres utilisateur."
 
   - task: "POST /api/user/add-friend - Ajouter un ami"
     implemented: true
