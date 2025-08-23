@@ -145,6 +145,265 @@ def test_cors_headers(base_url):
         print(f"❌ CORS test failed: {e}")
         return False
 
+def test_user_registration(base_url):
+    """Test POST /api/auth/register endpoint"""
+    print("\n🔍 Testing user registration /api/auth/register...")
+    try:
+        # Use realistic test data for Le Lapin Blanc RPG
+        test_user = {
+            "username": "alice_wonderland",
+            "email": "alice@wonderland.com", 
+            "password": "rabbit_hole123"
+        }
+        
+        response = requests.post(
+            f"{base_url}/api/auth/register",
+            json=test_user,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {data}")
+            
+            # Validate JWT token response
+            if "access_token" in data and "token_type" in data:
+                if data["token_type"] == "bearer" and len(data["access_token"]) > 0:
+                    print("✅ User registration successful - JWT token received")
+                    return True, data["access_token"]
+                else:
+                    print("❌ Invalid token format in registration response")
+                    return False, None
+            else:
+                print("❌ Registration response missing token fields")
+                return False, None
+        else:
+            print(f"❌ Registration failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Registration connection error: {e}")
+        return False, None
+
+def test_user_login(base_url):
+    """Test POST /api/auth/login endpoint"""
+    print("\n🔍 Testing user login /api/auth/login...")
+    try:
+        login_data = {
+            "username": "alice_wonderland",
+            "password": "rabbit_hole123"
+        }
+        
+        response = requests.post(
+            f"{base_url}/api/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {data}")
+            
+            # Validate JWT token response
+            if "access_token" in data and "token_type" in data:
+                if data["token_type"] == "bearer" and len(data["access_token"]) > 0:
+                    print("✅ User login successful - JWT token received")
+                    print("✅ User is_online status should be updated to true")
+                    return True, data["access_token"]
+                else:
+                    print("❌ Invalid token format in login response")
+                    return False, None
+            else:
+                print("❌ Login response missing token fields")
+                return False, None
+        else:
+            print(f"❌ Login failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Login connection error: {e}")
+        return False, None
+
+def test_user_profile(base_url, token):
+    """Test GET /api/auth/me endpoint"""
+    print("\n🔍 Testing user profile /api/auth/me...")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(
+            f"{base_url}/api/auth/me",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {data}")
+            
+            # Validate user profile structure
+            required_fields = ["id", "username", "stats", "is_online"]
+            if all(field in data for field in required_fields):
+                # Check ELO stats initialization
+                stats = data.get("stats", {})
+                expected_categories = ["travail", "sport", "creation", "lecture", "adaptabilite"]
+                
+                elo_check = True
+                for category in expected_categories:
+                    if category in stats:
+                        category_stats = stats[category]
+                        if category_stats.get("elo") == 1200:
+                            print(f"✅ {category.capitalize()} ELO initialized to 1200")
+                        else:
+                            print(f"❌ {category.capitalize()} ELO not set to 1200: {category_stats.get('elo')}")
+                            elo_check = False
+                    else:
+                        print(f"❌ Missing stats category: {category}")
+                        elo_check = False
+                
+                if data["username"] == "alice_wonderland" and elo_check:
+                    print("✅ User profile retrieved successfully with correct ELO stats")
+                    return True
+                else:
+                    print("❌ User profile data validation failed")
+                    return False
+            else:
+                print("❌ User profile missing required fields")
+                return False
+        else:
+            print(f"❌ Profile retrieval failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Profile retrieval connection error: {e}")
+        return False
+
+def test_user_search(base_url, token):
+    """Test GET /api/users/search/{username} endpoint"""
+    print("\n🔍 Testing user search /api/users/search/alice_wonderland...")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(
+            f"{base_url}/api/users/search/alice_wonderland",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {data}")
+            
+            # Validate search result
+            if data.get("username") == "alice_wonderland":
+                required_fields = ["id", "username", "stats", "is_online"]
+                if all(field in data for field in required_fields):
+                    print("✅ User search successful - found created user")
+                    return True
+                else:
+                    print("❌ User search result missing required fields")
+                    return False
+            else:
+                print("❌ User search returned wrong user")
+                return False
+        else:
+            print(f"❌ User search failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ User search connection error: {e}")
+        return False
+
+def test_user_logout(base_url, token):
+    """Test POST /api/auth/logout endpoint"""
+    print("\n🔍 Testing user logout /api/auth/logout...")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.post(
+            f"{base_url}/api/auth/logout",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {data}")
+            
+            if "message" in data:
+                print("✅ User logout successful - is_online status should be updated to false")
+                return True
+            else:
+                print("❌ Logout response missing message")
+                return False
+        else:
+            print(f"❌ Logout failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Logout connection error: {e}")
+        return False
+
+def test_authentication_system(base_url):
+    """Test complete authentication system flow"""
+    print("\n🎯 Testing Complete Authentication System Flow")
+    print("=" * 60)
+    
+    auth_results = {}
+    token = None
+    
+    # Test registration
+    success, token = test_user_registration(base_url)
+    auth_results['registration'] = success
+    
+    if not success:
+        print("❌ Registration failed - skipping remaining auth tests")
+        return auth_results
+    
+    # Test login (get fresh token)
+    success, login_token = test_user_login(base_url)
+    auth_results['login'] = success
+    if success and login_token:
+        token = login_token  # Use login token for subsequent tests
+    
+    # Test profile retrieval
+    if token:
+        auth_results['profile'] = test_user_profile(base_url, token)
+        auth_results['user_search'] = test_user_search(base_url, token)
+        auth_results['logout'] = test_user_logout(base_url, token)
+    else:
+        print("❌ No valid token - skipping profile, search, and logout tests")
+        auth_results['profile'] = False
+        auth_results['user_search'] = False
+        auth_results['logout'] = False
+    
+    return auth_results
+
 def run_all_tests():
     """Run all backend tests"""
     print("🚀 Starting Backend API Tests for Le Lapin Blanc RPG")
