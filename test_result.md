@@ -209,15 +209,18 @@ backend:
 
   - task: "POST /api/user/attack - Utiliser une attaque"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"  
         - comment: "Permet d'utiliser une attaque contre un autre joueur. L'attaque est marquée comme utilisée et l'effet est stocké pour application ultérieure"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/attack fonctionne parfaitement. Test complet avec 2 utilisateurs: attaque 'Entrave physique' envoyée avec succès, attaque marquée comme utilisée, effet stocké dans attack_actions pour application ultérieure. Validation complète du flux d'attaque."
 
   - task: "POST /api/user/level-up - Monter de niveau et gagner attaque"
     implemented: true
