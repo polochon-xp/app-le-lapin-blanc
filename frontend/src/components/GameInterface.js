@@ -135,6 +135,19 @@ const GameInterface = () => {
     saveGameState();
   }, [player, stats, missions, currentTheme, categories, selectedDate]);
 
+  // Vérifier l'authentification et afficher le modal si nécessaire
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      setShowAuthModal(true);
+    }
+  }, [loading, isAuthenticated]);
+
+  // Gérer la connexion réussie
+  const handleAuthSuccess = (authData) => {
+    login(authData);
+    setShowAuthModal(false);
+  };
+
   // Nettoyage automatique des missions expirées
   useEffect(() => {
     const cleanupMissions = () => {
