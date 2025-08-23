@@ -315,6 +315,182 @@ async def use_attack(attack_action: AttackAction, current_user: User = Depends(g
     
     return {"message": f"Attaque envoyée vers {attack_action.target_username}", "attack_id": attack_action.attack_id}
 
+@api_router.post("/user/level-up")
+async def level_up_user(stat_name: str, current_user: User = Depends(get_current_user)):
+    """Fait monter un utilisateur de niveau et lui donne une attaque aléatoire"""
+    if stat_name not in current_user.stats:
+        raise HTTPException(status_code=400, detail="Stat non valide")
+    
+    # Incrémenter le niveau
+    current_stat = current_user.stats[stat_name]
+    new_level = current_stat["level"] + 1
+    
+    # Donner une attaque aléatoire
+    random_attack_id = random.randint(1, 50)
+    new_attack = UserAttack(attack_id=random_attack_id)
+    
+    # Mettre à jour en base
+    await db.users.update_one(
+        {"username": current_user.username},
+        {
+            "$set": {f"stats.{stat_name}.level": new_level},
+            "$push": {"attacks": new_attack.dict()}
+        }
+    )
+    
+    attack_info = next((a for a in ATTACKS_DATA if a["id"] == random_attack_id), None)
+    
+    return {
+        "message": f"Niveau augmenté en {stat_name}",
+        "new_level": new_level,
+        "attack_gained": attack_info
+    }
+
+@api_router.get("/user/pending-attacks")
+async def get_pending_attacks(current_user: User = Depends(get_current_user)):
+    """Récupère les attaques en attente d'application pour l'utilisateur"""
+    pending = await db.attack_actions.find({"target": current_user.username, "applied": False}).to_list(100)
+    
+    attack_details = []
+    for attack in pending:
+        attack_data = next((a for a in ATTACKS_DATA if a["id"] == attack["attack_id"]), None)
+        if attack_data:
+            attack_details.append({
+                "attacker": attack["attacker"],
+                "attack": attack_data,
+                "target_stat": attack.get("target_stat"),
+                "effect_target": attack.get("effect_target"),
+                "created_at": attack["created_at"]
+            })
+    
+    return attack_details
+
+@api_router.post("/user/apply-pending-attacks")
+async def apply_pending_attacks(current_user: User = Depends(get_current_user)):
+    """Applique toutes les attaques en attente pour l'utilisateur connecté"""
+    pending = await db.attack_actions.find({"target": current_user.username, "applied": False}).to_list(100)
+    
+    effects_applied = []
+    current_stats = current_user.stats.copy()
+    current_health = current_user.health
+    current_energy = current_user.energy
+    
+    for attack in pending:
+        attack_data = next((a for a in ATTACKS_DATA if a["id"] == attack["attack_id"]), None)
+        if not attack_data:
+            continue
+            
+        effect_type = attack_data["effect_type"]
+        effect_value = attack_data["effect_value"]
+        target_stat = attack.get("target_stat")
+        effect_target = attack.get("effect_target", "elo")
+        
+        # Appliquer l'effet selon le type
+        if effect_type == "elo_loss":
+            if target_stat and target_stat in current_stats:
+                current_stats[target_stat]["elo"] = max(0, current_stats[target_stat]["elo"] - effect_value)
+            else:
+                # Appliquer sur toutes les stats
+                for stat_name in current_stats:
+                    current_stats[stat_name]["elo"] = max(0, current_stats[stat_name]["elo"] - effect_value)
+        
+        elif effect_type == "elo_steal":
+            if target_stat and target_stat in current_stats:
+                stolen = min(effect_value, current_stats[target_stat]["elo"])
+                current_stats[target_stat]["elo"] -= stolen
+                # Créditer l'attaquant (à implémenter si nécessaire)
+        
+        elif effect_type == "health_loss":
+            current_health = max(0, current_health - effect_value)
+        
+        elif effect_type == "health_percentage":
+            current_health = max(0, current_health - (current_health * effect_value // 100))
+        
+        elif effect_type == "energy_drain":
+            current_energy = max(0, current_energy - effect_value)
+        
+        elif effect_type == "energy_reset":
+            current_energy = 0
+        
+        elif effect_type == "energy_steal":
+            stolen = min(effect_value, current_energy)
+            current_energy -= stolen
+        
+        effects_applied.append({
+            "attack_name": attack_data["name"],
+            "attacker": attack["attacker"],
+            "effect": attack_data["description"]
+        })
+    
+    # Mettre à jour l'utilisateur en base
+    await db.users.update_one(
+        {"username": current_user.username},
+        {
+            "$set": {
+                "stats": current_stats,
+                "health": current_health,
+                "energy": current_energy
+            }
+        }
+    )
+    
+    # Marquer les attaques comme appliquées
+    await db.attack_actions.update_many(
+        {"target": current_user.username, "applied": False},
+        {"$set": {"applied": True, "applied_at": datetime.utcnow()}}
+    )
+    
+    return {"effects_applied": effects_applied, "total_attacks": len(pending)}
+
+@api_router.get("/user/titles")
+async def get_user_titles(current_user: User = Depends(get_current_user)):
+    """Récupère les titres disponibles pour l'utilisateur selon son niveau"""
+    # Calculer le niveau total de l'utilisateur
+    total_level = sum(stat["level"] for stat in current_user.stats.values())
+    
+    available_titles = []
+    for title in TITLES_DATA:
+        if total_level >= title["level_required"]:
+            available_titles.append({
+                **title,
+                "unlocked": True,
+                "current": title["name"] == current_user.current_title
+            })
+        else:
+            available_titles.append({
+                **title,
+                "unlocked": False,
+                "current": False
+            })
+    
+    return {
+        "total_level": total_level,
+        "current_title": current_user.current_title,
+        "titles": available_titles
+    }
+
+@api_router.post("/user/select-title")
+async def select_title(title_name: str, current_user: User = Depends(get_current_user)):
+    """Permet à l'utilisateur de choisir un titre"""
+    # Calculer le niveau total
+    total_level = sum(stat["level"] for stat in current_user.stats.values())
+    
+    # Vérifier que le titre est disponible
+    title = next((t for t in TITLES_DATA if t["name"] == title_name), None)
+    if not title:
+        raise HTTPException(status_code=404, detail="Titre non trouvé")
+    
+    if total_level < title["level_required"]:
+        raise HTTPException(status_code=400, detail="Niveau insuffisant pour ce titre")
+    
+    # Mettre à jour le titre actuel
+    await db.users.update_one(
+        {"username": current_user.username},
+        {"$set": {"current_title": title_name}}
+    )
+    
+    return {"message": f"Titre '{title_name}' sélectionné", "title": title}
+
 # Authentication endpoints
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
