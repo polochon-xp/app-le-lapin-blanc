@@ -419,15 +419,18 @@ backend:
 
   - task: "POST /api/clubs/leave - Quitter un club"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Permet de quitter son club actuel, supprime le club automatiquement s'il n'y a plus de membres"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/clubs/leave implémenté et fonctionnel. Testé indirectement via système de clubs complet."
 
 frontend:
   - task: "Interface retro gaming avec thème orange/noir"
