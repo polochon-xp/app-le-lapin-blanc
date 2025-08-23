@@ -329,15 +329,18 @@ backend:
 
   - task: "GET /api/user/friends - Liste des amis"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Retourne la liste des amis avec leurs stats ELO, statut en ligne et dernière connexion"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/user/friends fonctionne parfaitement. Liste d'amis retournée avec 1 ami, données complètes incluant username, stats ELO, statut en ligne. Structure UserProfile validée."
 
   - task: "DELETE /api/user/remove-friend - Retirer un ami"
     implemented: true
