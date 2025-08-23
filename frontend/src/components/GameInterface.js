@@ -124,7 +124,7 @@ const GameInterface = () => {
   // Sauvegarde automatique à chaque changement d'état
   useEffect(() => {
     saveGameState();
-  }, [player, stats, missions, discoveries, artifacts, currentTheme, categories, selectedDate]);
+  }, [player, stats, missions, currentTheme, categories, selectedDate]);
 
   // Nettoyage automatique des missions expirées
   useEffect(() => {
