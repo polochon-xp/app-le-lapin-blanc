@@ -92,7 +92,43 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# User Models
+# Attack/Defense/Title Models
+class Attack(BaseModel):
+    id: int
+    name: str
+    description: str
+    effect_type: str  # "elo_loss", "stat_block", "energy_drain", etc.
+    effect_value: int
+    target_stat: Optional[str] = None  # "travail", "sport", etc. ou None si global
+    duration_hours: int = 0  # 0 = instantané, 24 = 1 jour, etc.
+
+class Defense(BaseModel):
+    id: int
+    name: str
+    description: str
+    protection_type: str
+    effect_value: int
+
+class Title(BaseModel):
+    level_required: int
+    name: str
+    description: str
+    bonus_type: str
+    bonus_value: int
+
+class UserAttack(BaseModel):
+    attack_id: int
+    obtained_at: datetime = Field(default_factory=datetime.utcnow)
+    used: bool = False
+    used_at: Optional[datetime] = None
+
+class AttackAction(BaseModel):
+    target_username: str
+    attack_id: int
+    target_stat: Optional[str] = None
+    effect_target: str  # "elo" ou "level"
+
+# User Models (updated)
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
@@ -118,6 +154,11 @@ class User(BaseModel):
     })
     friends: List[str] = Field(default_factory=list)
     club_id: Optional[str] = None
+    attacks: List[UserAttack] = Field(default_factory=list)
+    defenses: List[int] = Field(default_factory=list)
+    current_title: Optional[str] = "Novice"
+    health: int = 100
+    energy: int = 100
 
 class Token(BaseModel):
     access_token: str
