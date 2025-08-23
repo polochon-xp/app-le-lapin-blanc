@@ -141,30 +141,6 @@ backend:
         - agent: "testing"
         - comment: "✅ TESTÉ: MongoDB connectivité parfaite. Base de données 'test_database' accessible, collection 'status_checks' créée et fonctionnelle. Persistance des données vérifiée."
 
-  - task: "Serveur répond correctement sur configuration"
-    implemented: true
-    working: true
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-        - agent: "testing"
-        - comment: "✅ TESTÉ: Serveur FastAPI répond parfaitement sur URL externe via supervisor. Configuration port 8001 interne correctement mappée vers URL publique."
-
-  - task: "Endpoints API accessibles depuis frontend"
-    implemented: true
-    working: true
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-        - agent: "testing"
-        - comment: "✅ TESTÉ: Tous les endpoints API parfaitement accessibles depuis frontend. CORS configuré correctement, requêtes cross-origin fonctionnelles. URL REACT_APP_BACKEND_URL utilisée avec succès."
-
   - task: "Inscription utilisateur POST /api/auth/register"
     implemented: true
     working: true
@@ -201,29 +177,209 @@ backend:
         - agent: "testing"
         - comment: "✅ TESTÉ: Endpoint profil utilisateur fonctionne parfaitement. Retourne infos utilisateur complètes avec stats ELO (1200 pour chaque catégorie), statut is_online, et authentification JWT sécurisée."
 
-  - task: "Recherche utilisateur GET /api/users/search/{username}"
+  - task: "GET /api/attacks - Liste des 50 attaques disponibles"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
-        - agent: "testing"
-        - comment: "✅ TESTÉ: Endpoint recherche utilisateur fonctionne parfaitement. Trouve utilisateur créé avec recherche regex insensible à la casse, retourne profil complet avec authentification JWT requise."
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implémenté avec les 50 attaques complètes incluant leurs effets, valeurs et durées. Chaque attaque a un type d'effet spécifique (elo_loss, energy_drain, etc.)"
 
-  - task: "Déconnexion POST /api/auth/logout"
+  - task: "GET /api/user/attacks - Attaques disponibles de l'utilisateur"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
-        - agent: "testing"
-        - comment: "✅ TESTÉ: Endpoint déconnexion fonctionne parfaitement. Met à jour is_online à false, retourne message de confirmation, authentification JWT sécurisée."
+        - working: "NA"
+        - agent: "main"
+        - comment: "Endpoint qui retourne les attaques non utilisées de l'utilisateur connecté avec leurs détails complets"
+
+  - task: "POST /api/user/attack - Utiliser une attaque"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"  
+        - comment: "Permet d'utiliser une attaque contre un autre joueur. L'attaque est marquée comme utilisée et l'effet est stocké pour application ultérieure"
+
+  - task: "POST /api/user/level-up - Monter de niveau et gagner attaque"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Permet de faire monter un utilisateur de niveau dans une stat et lui donne une attaque aléatoire parmi les 50 disponibles"
+
+  - task: "GET /api/user/pending-attacks - Attaques en attente"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Récupère toutes les attaques en attente d'application pour l'utilisateur connecté avec détails de l'attaquant"
+
+  - task: "POST /api/user/apply-pending-attacks - Appliquer les effets"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Applique tous les effets d'attaques en attente: réduction ELO, perte de PV, drain d'énergie selon le type d'attaque"
+
+  - task: "GET /api/titles - Liste des titres disponibles"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Retourne tous les titres disponibles selon les niveaux requis (Novice lv1, Initié lv5, Disciple lv10, etc.)"
+
+  - task: "GET /api/user/titles - Titres de l'utilisateur"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Calcule le niveau total de l'utilisateur et retourne les titres débloqués/verrouillés avec le titre actuel"
+
+  - task: "POST /api/user/select-title - Choisir un titre"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Permet de sélectionner un titre débloqué comme titre actuel de l'utilisateur"
+
+  - task: "POST /api/user/add-friend - Ajouter un ami"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Permet d'ajouter un utilisateur à sa liste d'amis avec vérifications (existence, pas déjà ami, pas soi-même)"
+
+  - task: "GET /api/user/friends - Liste des amis"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Retourne la liste des amis avec leurs stats ELO, statut en ligne et dernière connexion"
+
+  - task: "DELETE /api/user/remove-friend - Retirer un ami"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Permet de retirer un utilisateur de sa liste d'amis"
+
+  - task: "POST /api/clubs/create - Créer un club"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Permet de créer un nouveau club avec nom unique, description et limite de 20 membres"
+
+  - task: "GET /api/clubs/search/{name} - Rechercher des clubs"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Recherche des clubs par nom avec recherche insensible à la casse"
+
+  - task: "POST /api/clubs/join/{club_id} - Rejoindre un club"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Permet de rejoindre un club existant avec vérifications (pas déjà membre, club pas plein)"
+
+  - task: "GET /api/user/club - Club de l'utilisateur"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Retourne les infos complètes du club de l'utilisateur avec la liste des membres et leurs stats"
+
+  - task: "POST /api/clubs/leave - Quitter un club"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Permet de quitter son club actuel, supprime le club automatiquement s'il n'y a plus de membres"
 
 frontend:
   - task: "Interface retro gaming avec thème orange/noir"
