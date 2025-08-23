@@ -219,6 +219,70 @@ class UserProfile(BaseModel):
     is_online: bool
     last_login: Optional[datetime] = None
 
+# Attack/Card endpoints
+@api_router.get("/attacks")
+async def get_all_attacks():
+    """Récupère toutes les attaques disponibles"""
+    return ATTACKS_DATA
+
+@api_router.get("/defenses")
+async def get_all_defenses():
+    """Récupère toutes les défenses disponibles"""
+    return DEFENSES_DATA
+
+@api_router.get("/titles")
+async def get_all_titles():
+    """Récupère tous les titres disponibles"""
+    return TITLES_DATA
+
+@api_router.get("/user/attacks")
+async def get_user_attacks(current_user: User = Depends(get_current_user)):
+    """Récupère les attaques d'un utilisateur"""
+    available_attacks = []
+    for user_attack in current_user.attacks:
+        if not user_attack.used:
+            attack_data = next((a for a in ATTACKS_DATA if a["id"] == user_attack.attack_id), None)
+            if attack_data:
+                available_attacks.append({
+                    **attack_data,
+                    "obtained_at": user_attack.obtained_at
+                })
+    return available_attacks
+
+@api_router.post("/user/attack")
+async def use_attack(attack_action: AttackAction, current_user: User = Depends(get_current_user)):
+    """Utilise une attaque contre un autre joueur"""
+    # Vérifier que l'utilisateur possède cette attaque
+    user_attack = next((ua for ua in current_user.attacks if ua.attack_id == attack_action.attack_id and not ua.used), None)
+    if not user_attack:
+        raise HTTPException(status_code=400, detail="Attaque non disponible")
+    
+    # Vérifier que la cible existe
+    target_user = await db.users.find_one({"username": attack_action.target_username})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="Utilisateur cible non trouvé")
+    
+    # Marquer l'attaque comme utilisée
+    await db.users.update_one(
+        {"username": current_user.username, "attacks.attack_id": attack_action.attack_id},
+        {"$set": {"attacks.$.used": True, "attacks.$.used_at": datetime.utcnow()}}
+    )
+    
+    # Créer l'action d'attaque (sera appliquée à minuit ou à la connexion)
+    attack_effect = {
+        "attacker": current_user.username,
+        "target": attack_action.target_username,
+        "attack_id": attack_action.attack_id,
+        "target_stat": attack_action.target_stat,
+        "effect_target": attack_action.effect_target,
+        "created_at": datetime.utcnow(),
+        "applied": False
+    }
+    
+    await db.attack_actions.insert_one(attack_effect)
+    
+    return {"message": f"Attaque envoyée vers {attack_action.target_username}", "attack_id": attack_action.attack_id}
+
 # Authentication endpoints
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
