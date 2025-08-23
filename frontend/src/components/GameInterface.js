@@ -54,8 +54,6 @@ const GameInterface = () => {
       const savedPlayer = localStorage.getItem('lapinBlanc_player');
       const savedStats = localStorage.getItem('lapinBlanc_stats');
       const savedMissions = localStorage.getItem('lapinBlanc_missions');
-      const savedDiscoveries = localStorage.getItem('lapinBlanc_discoveries');
-      const savedArtifacts = localStorage.getItem('lapinBlanc_artifacts');
       const savedTheme = localStorage.getItem('lapinBlanc_theme');
       const savedCategories = localStorage.getItem('lapinBlanc_categories');
       const savedSelectedDate = localStorage.getItem('lapinBlanc_selectedDate');
