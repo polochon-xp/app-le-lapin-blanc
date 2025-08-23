@@ -48,6 +48,44 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+# User Models
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class User(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    username: str
+    email: EmailStr
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_online: bool = False
+    last_login: Optional[datetime] = None
+    stats: dict = Field(default_factory=lambda: {
+        "travail": {"level": 0, "xp": 0, "maxXp": 100, "elo": 1200},
+        "sport": {"level": 0, "xp": 0, "maxXp": 100, "elo": 1200},
+        "creation": {"level": 0, "xp": 0, "maxXp": 100, "elo": 1200},
+        "lecture": {"level": 0, "xp": 0, "maxXp": 100, "elo": 1200},
+        "adaptabilite": {"level": 0, "xp": 0, "maxXp": 100, "elo": 1200}
+    })
+    friends: List[str] = Field(default_factory=list)
+    club_id: Optional[str] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class UserProfile(BaseModel):
+    id: str
+    username: str
+    stats: dict
+    is_online: bool
+    last_login: Optional[datetime] = None
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
