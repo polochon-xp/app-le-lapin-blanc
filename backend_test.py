@@ -369,6 +369,548 @@ def test_user_logout(base_url, token):
         print(f"❌ Logout connection error: {e}")
         return False
 
+def test_attacks_endpoint(base_url):
+    """Test GET /api/attacks endpoint - should return 50 attacks"""
+    print("\n🔍 Testing attacks list /api/attacks...")
+    try:
+        response = requests.get(f"{base_url}/api/attacks", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Number of attacks returned: {len(data)}")
+            
+            # Validate we have exactly 50 attacks
+            if len(data) == 50:
+                # Check structure of first attack
+                first_attack = data[0]
+                required_fields = ["id", "name", "description", "effect_type", "effect_value", "duration_hours"]
+                
+                if all(field in first_attack for field in required_fields):
+                    print(f"✅ Sample attack: {first_attack['name']} - {first_attack['description']}")
+                    print(f"✅ Effect: {first_attack['effect_type']} ({first_attack['effect_value']}) for {first_attack['duration_hours']}h")
+                    print("✅ All 50 attacks loaded with complete structure")
+                    return True
+                else:
+                    print("❌ Attack structure missing required fields")
+                    return False
+            else:
+                print(f"❌ Expected 50 attacks, got {len(data)}")
+                return False
+        else:
+            print(f"❌ Attacks endpoint failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Attacks endpoint connection error: {e}")
+        return False
+
+def test_titles_endpoint(base_url):
+    """Test GET /api/titles endpoint - should return 9 titles"""
+    print("\n🔍 Testing titles list /api/titles...")
+    try:
+        response = requests.get(f"{base_url}/api/titles", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Number of titles returned: {len(data)}")
+            
+            # Validate we have exactly 9 titles
+            if len(data) == 9:
+                # Check structure and progression
+                expected_titles = ["Novice", "Initié", "Disciple", "Combattant", "Érudit", "Stratège", "Maître", "Champion", "Légende"]
+                expected_levels = [1, 5, 10, 20, 30, 40, 50, 75, 100]
+                
+                titles_valid = True
+                for i, title in enumerate(data):
+                    required_fields = ["level_required", "name", "description", "bonus_type", "bonus_value"]
+                    if not all(field in title for field in required_fields):
+                        print(f"❌ Title {title.get('name', 'Unknown')} missing required fields")
+                        titles_valid = False
+                        continue
+                    
+                    if title["name"] == expected_titles[i] and title["level_required"] == expected_levels[i]:
+                        print(f"✅ {title['name']} (Level {title['level_required']}): {title['description']}")
+                    else:
+                        print(f"❌ Title mismatch at position {i}: expected {expected_titles[i]} (lv{expected_levels[i]}), got {title['name']} (lv{title['level_required']})")
+                        titles_valid = False
+                
+                if titles_valid:
+                    print("✅ All 9 titles loaded with correct progression")
+                    return True
+                else:
+                    return False
+            else:
+                print(f"❌ Expected 9 titles, got {len(data)}")
+                return False
+        else:
+            print(f"❌ Titles endpoint failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Titles endpoint connection error: {e}")
+        return False
+
+def test_user_attacks(base_url, token):
+    """Test GET /api/user/attacks endpoint"""
+    print("\n🔍 Testing user attacks /api/user/attacks...")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(
+            f"{base_url}/api/user/attacks",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"User has {len(data)} available attacks")
+            
+            # New user should have no attacks initially
+            if len(data) == 0:
+                print("✅ New user correctly has no attacks initially")
+                return True
+            else:
+                # If user has attacks, validate structure
+                for attack in data:
+                    required_fields = ["id", "name", "description", "effect_type", "effect_value", "duration_hours", "obtained_at"]
+                    if all(field in attack for field in required_fields):
+                        print(f"✅ Attack: {attack['name']} - {attack['description']}")
+                    else:
+                        print("❌ User attack missing required fields")
+                        return False
+                print("✅ User attacks structure valid")
+                return True
+        else:
+            print(f"❌ User attacks failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ User attacks connection error: {e}")
+        return False
+
+def test_level_up_system(base_url, token):
+    """Test POST /api/user/level-up endpoint"""
+    print("\n🔍 Testing level up system /api/user/level-up...")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Test leveling up in 'travail' stat
+        response = requests.post(
+            f"{base_url}/api/user/level-up?stat_name=travail",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {data}")
+            
+            # Validate response structure
+            required_fields = ["message", "new_level", "attack_gained"]
+            if all(field in data for field in required_fields):
+                if data["new_level"] == 1:  # Should be level 1 after first level up
+                    attack_gained = data["attack_gained"]
+                    if attack_gained and "name" in attack_gained and "description" in attack_gained:
+                        print(f"✅ Level up successful! New level: {data['new_level']}")
+                        print(f"✅ Attack gained: {attack_gained['name']} - {attack_gained['description']}")
+                        return True, attack_gained["id"]
+                    else:
+                        print("❌ Attack gained structure invalid")
+                        return False, None
+                else:
+                    print(f"❌ Unexpected new level: {data['new_level']}")
+                    return False, None
+            else:
+                print("❌ Level up response missing required fields")
+                return False, None
+        else:
+            print(f"❌ Level up failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Level up connection error: {e}")
+        return False, None
+
+def test_user_titles(base_url, token):
+    """Test GET /api/user/titles endpoint"""
+    print("\n🔍 Testing user titles /api/user/titles...")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(
+            f"{base_url}/api/user/titles",
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response: {data}")
+            
+            # Validate response structure
+            required_fields = ["total_level", "current_title", "titles"]
+            if all(field in data for field in required_fields):
+                total_level = data["total_level"]
+                current_title = data["current_title"]
+                titles = data["titles"]
+                
+                print(f"✅ Total level: {total_level}")
+                print(f"✅ Current title: {current_title}")
+                
+                # Check that titles are properly marked as unlocked/locked
+                unlocked_count = sum(1 for title in titles if title.get("unlocked", False))
+                expected_unlocked = sum(1 for title in titles if title["level_required"] <= total_level)
+                
+                if unlocked_count == expected_unlocked:
+                    print(f"✅ Correct number of titles unlocked: {unlocked_count}")
+                    
+                    # Check that Novice is unlocked and current for new user
+                    novice_title = next((t for t in titles if t["name"] == "Novice"), None)
+                    if novice_title and novice_title.get("unlocked") and novice_title.get("current"):
+                        print("✅ Novice title correctly set as current for new user")
+                        return True
+                    else:
+                        print("❌ Novice title not properly set as current")
+                        return False
+                else:
+                    print(f"❌ Title unlock count mismatch: got {unlocked_count}, expected {expected_unlocked}")
+                    return False
+            else:
+                print("❌ User titles response missing required fields")
+                return False
+        else:
+            print(f"❌ User titles failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ User titles connection error: {e}")
+        return False
+
+def test_attack_system_flow(base_url, token1, token2, attack_id):
+    """Test complete attack system flow between two users"""
+    print("\n🔍 Testing attack system flow...")
+    try:
+        headers1 = {
+            "Authorization": f"Bearer {token1}",
+            "Content-Type": "application/json"
+        }
+        headers2 = {
+            "Authorization": f"Bearer {token2}",
+            "Content-Type": "application/json"
+        }
+        
+        # User 1 attacks User 2
+        attack_data = {
+            "target_username": "bob_hatter",
+            "attack_id": attack_id,
+            "target_stat": "travail",
+            "effect_target": "elo"
+        }
+        
+        response = requests.post(
+            f"{base_url}/api/user/attack",
+            json=attack_data,
+            headers=headers1,
+            timeout=10
+        )
+        
+        print(f"Attack Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Attack Response: {data}")
+            
+            if "message" in data and "attack_id" in data:
+                print("✅ Attack sent successfully")
+                
+                # Check pending attacks for target user
+                response = requests.get(
+                    f"{base_url}/api/user/pending-attacks",
+                    headers=headers2,
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    pending = response.json()
+                    print(f"Pending attacks: {len(pending)}")
+                    
+                    if len(pending) > 0:
+                        attack_pending = pending[0]
+                        if attack_pending.get("attacker") == "alice_wonderland":
+                            print("✅ Attack correctly appears in target's pending attacks")
+                            
+                            # Apply pending attacks
+                            response = requests.post(
+                                f"{base_url}/api/user/apply-pending-attacks",
+                                headers=headers2,
+                                timeout=10
+                            )
+                            
+                            if response.status_code == 200:
+                                apply_data = response.json()
+                                print(f"Apply Response: {apply_data}")
+                                
+                                if apply_data.get("total_attacks", 0) > 0:
+                                    print("✅ Attack effects applied successfully")
+                                    return True
+                                else:
+                                    print("❌ No attacks were applied")
+                                    return False
+                            else:
+                                print(f"❌ Apply attacks failed: {response.status_code}")
+                                return False
+                        else:
+                            print("❌ Wrong attacker in pending attacks")
+                            return False
+                    else:
+                        print("❌ No pending attacks found for target user")
+                        return False
+                else:
+                    print(f"❌ Get pending attacks failed: {response.status_code}")
+                    return False
+            else:
+                print("❌ Attack response missing required fields")
+                return False
+        else:
+            print(f"❌ Attack failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Attack system flow connection error: {e}")
+        return False
+
+def test_friends_system(base_url, token1, token2):
+    """Test friends system endpoints"""
+    print("\n🔍 Testing friends system...")
+    try:
+        headers1 = {
+            "Authorization": f"Bearer {token1}",
+            "Content-Type": "application/json"
+        }
+        
+        # Add friend
+        response = requests.post(
+            f"{base_url}/api/user/add-friend?friend_username=bob_hatter",
+            headers=headers1,
+            timeout=10
+        )
+        
+        print(f"Add Friend Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Add Friend Response: {data}")
+            
+            if "message" in data:
+                print("✅ Friend added successfully")
+                
+                # Get friends list
+                response = requests.get(
+                    f"{base_url}/api/user/friends",
+                    headers=headers1,
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    friends = response.json()
+                    print(f"Friends list: {len(friends)} friends")
+                    
+                    if len(friends) > 0:
+                        friend = friends[0]
+                        if friend.get("username") == "bob_hatter":
+                            print("✅ Friend appears in friends list with correct data")
+                            return True
+                        else:
+                            print("❌ Wrong friend in friends list")
+                            return False
+                    else:
+                        print("❌ Friends list is empty")
+                        return False
+                else:
+                    print(f"❌ Get friends failed: {response.status_code}")
+                    return False
+            else:
+                print("❌ Add friend response missing message")
+                return False
+        else:
+            print(f"❌ Add friend failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Friends system connection error: {e}")
+        return False
+
+def test_clubs_system(base_url, token):
+    """Test clubs system endpoints"""
+    print("\n🔍 Testing clubs system...")
+    try:
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Create club
+        club_data = {
+            "name": "Les Aventuriers du Terrier",
+            "description": "Club pour les explorateurs du monde d'Alice"
+        }
+        
+        response = requests.post(
+            f"{base_url}/api/clubs/create",
+            json=club_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Create Club Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Create Club Response: {data}")
+            
+            if "message" in data and "club" in data:
+                club = data["club"]
+                club_id = club.get("id")
+                print(f"✅ Club created successfully: {club['name']}")
+                
+                # Get user's club
+                response = requests.get(
+                    f"{base_url}/api/user/club",
+                    headers=headers,
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    club_data = response.json()
+                    print(f"User Club Response: {club_data}")
+                    
+                    if "club" in club_data and "members" in club_data:
+                        user_club = club_data["club"]
+                        members = club_data["members"]
+                        
+                        if user_club.get("name") == "Les Aventuriers du Terrier" and len(members) == 1:
+                            print("✅ User correctly appears in their own club")
+                            return True, club_id
+                        else:
+                            print("❌ Club data or membership incorrect")
+                            return False, None
+                    else:
+                        print("❌ User club response missing required fields")
+                        return False, None
+                else:
+                    print(f"❌ Get user club failed: {response.status_code}")
+                    return False, None
+            else:
+                print("❌ Create club response missing required fields")
+                return False, None
+        else:
+            print(f"❌ Create club failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Clubs system connection error: {e}")
+        return False, None
+
+def create_second_test_user(base_url):
+    """Create a second test user for multi-user testing"""
+    print("\n🔍 Creating second test user...")
+    try:
+        test_user = {
+            "username": "bob_hatter",
+            "email": "bob@madhatter.com",
+            "password": "tea_party456"
+        }
+        
+        response = requests.post(
+            f"{base_url}/api/auth/register",
+            json=test_user,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            if "access_token" in data:
+                print("✅ Second test user created successfully")
+                return True, data["access_token"]
+        
+        print("❌ Failed to create second test user")
+        return False, None
+        
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Second user creation error: {e}")
+        return False, None
+
+def test_attack_defense_title_system(base_url):
+    """Test complete attack, defense and title system"""
+    print("\n🎯 Testing Complete Attack, Defense & Title System")
+    print("=" * 60)
+    
+    system_results = {}
+    
+    # Test static data endpoints first
+    system_results['attacks_list'] = test_attacks_endpoint(base_url)
+    system_results['titles_list'] = test_titles_endpoint(base_url)
+    
+    # Create two test users for interaction testing
+    success1, token1 = test_user_registration(base_url)
+    if not success1:
+        print("❌ Failed to create first user - skipping system tests")
+        return system_results
+    
+    success2, token2 = create_second_test_user(base_url)
+    if not success2:
+        print("❌ Failed to create second user - skipping multi-user tests")
+        token2 = None
+    
+    # Test user-specific endpoints
+    system_results['user_attacks'] = test_user_attacks(base_url, token1)
+    system_results['user_titles'] = test_user_titles(base_url, token1)
+    
+    # Test level up system and get an attack
+    success, attack_id = test_level_up_system(base_url, token1)
+    system_results['level_up'] = success
+    
+    # Test attack system flow if we have two users and an attack
+    if token2 and attack_id:
+        system_results['attack_flow'] = test_attack_system_flow(base_url, token1, token2, attack_id)
+        system_results['friends_system'] = test_friends_system(base_url, token1, token2)
+    else:
+        system_results['attack_flow'] = False
+        system_results['friends_system'] = False
+    
+    # Test clubs system
+    success, club_id = test_clubs_system(base_url, token1)
+    system_results['clubs_system'] = success
+    
+    return system_results
+
 def test_authentication_system(base_url):
     """Test complete authentication system flow"""
     print("\n🎯 Testing Complete Authentication System Flow")
