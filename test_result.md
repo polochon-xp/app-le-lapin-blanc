@@ -374,15 +374,18 @@ backend:
 
   - task: "GET /api/clubs/search/{name} - Rechercher des clubs"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Recherche des clubs par nom avec recherche insensible à la casse"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TESTÉ: Endpoint /api/clubs/search/{name} implémenté et fonctionnel. Testé indirectement via système de clubs complet."
 
   - task: "POST /api/clubs/join/{club_id} - Rejoindre un club"
     implemented: true
