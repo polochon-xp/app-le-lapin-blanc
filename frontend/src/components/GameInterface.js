@@ -838,7 +838,7 @@ const GameInterface = () => {
         {/* Main Interface Mobile */}
         <Tabs defaultValue="stats" className="space-y-4">
           <TabsList 
-            className="grid w-full grid-cols-6 h-12 bg-black/50 backdrop-blur-sm border-0"
+            className="grid w-full grid-cols-7 h-12 bg-black/50 backdrop-blur-sm border-0"
             style={{ backgroundColor: currentTheme.cardColor + '80' }}
           >
             <TabsTrigger value="stats" className="text-xs p-1 data-[state=active]:bg-white/10">
@@ -847,10 +847,10 @@ const GameInterface = () => {
             <TabsTrigger value="missions" className="text-xs p-1 data-[state=active]:bg-white/10">
               <Target className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="friends" className="text-xs p-1 data-[state=active]:bg-white/10">
+            <TabsTrigger value="social" className="text-xs p-1 data-[state=active]:bg-white/10">
               <Users className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="map" className="text-xs p-1 data-[state=active]:bg-white/10">
+            <TabsTrigger value="attack" className="text-xs p-1 data-[state=active]:bg-white/10">
               <Sword className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="titles" className="text-xs p-1 data-[state=active]:bg-white/10">
