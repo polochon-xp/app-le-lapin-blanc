@@ -859,6 +859,9 @@ const GameInterface = () => {
             <TabsTrigger value="optimization" className="text-xs p-1 data-[state=active]:bg-white/10">
               <Brain className="w-4 h-4" />
             </TabsTrigger>
+            <TabsTrigger value="notes" className="text-xs p-1 data-[state=active]:bg-white/10">
+              <FileText className="w-4 h-4" />
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats" className="space-y-3">
