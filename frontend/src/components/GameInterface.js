@@ -979,7 +979,20 @@ const GameInterface = () => {
           </TabsContent>
 
           <TabsContent value="optimization">
-            <OptimizationTab currentTheme={currentTheme} />
+            <div className="space-y-4">
+              <TimerInterface 
+                currentTheme={currentTheme} 
+                onComplete={(mode) => {
+                  // Gestion de la completion du timer
+                  console.log(`Timer ${mode} terminé !`);
+                }} 
+              />
+              <OptimizationTab currentTheme={currentTheme} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="notes" className="space-y-3">
+            <NotesTab currentTheme={currentTheme} />
           </TabsContent>
         </Tabs>
 
