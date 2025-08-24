@@ -339,6 +339,7 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
           )}
 
           {/* XP Calculé automatiquement */}
+          {console.log('DEBUG - mission.category:', mission.category)}
           {mission.category && (
             <div className="p-3 rounded-lg bg-black/30">
               <div className="flex items-center justify-between">
