@@ -339,10 +339,10 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
           )}
 
           {/* XP Calculé automatiquement */}
-          {(mission.category || mission.title) && (
+          {mission.category && (
             <div className="p-3 rounded-lg bg-black/30">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">XP Automatique (Debug: {mission.category || 'empty'})</span>
+                <span className="text-xs text-gray-400">XP Automatique</span>
                 <div className="flex items-center space-x-2">
                   <Target className="w-3 h-3" style={{ color: currentTheme.primaryColor }} />
                   <span className="text-sm font-bold" style={{ color: currentTheme.primaryColor }}>
