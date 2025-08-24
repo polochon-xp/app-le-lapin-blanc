@@ -159,6 +159,17 @@ const TitlesTab = ({ currentTheme }) => {
     }
   };
 
+  // Simulation des titres spéciaux obtenus (à remplacer par les vraies données utilisateur)
+  const getUnlockedSpecialTitles = () => {
+    // Pour la démo, on débloque quelques titres aléatoirement
+    const unlockedIds = ['explorateur', 'matinal', 'creatif_fou']; // Simulation
+    return unlockedIds;
+  };
+
+  const isSpecialTitleUnlocked = (titleId) => {
+    return getUnlockedSpecialTitles().includes(titleId);
+  };
+
   if (!userTitles) {
     return (
       <div className="flex items-center justify-center py-8">
