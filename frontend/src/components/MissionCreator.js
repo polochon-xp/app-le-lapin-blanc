@@ -55,7 +55,8 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
       'travail': 30,
       'sport': 25,
       'creation': 35,
-      'lecture': 20
+      'lecture': 20,
+      'adaptabilite': 30
     };
     
     const categoryMultiplier = baseXP[category] || 25;
