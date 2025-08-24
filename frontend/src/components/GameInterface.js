@@ -771,12 +771,12 @@ const GameInterface = () => {
             </div>
             <div>
               <h1 className="text-lg font-bold" style={{ color: currentTheme.textColor }}>
-                {isAuthenticated && user ? user.username : 'Novice-001'}
+                {isAuthenticated && user ? user.username : (loading ? 'Chargement...' : 'Visiteur')}
               </h1>
               <p className="text-xs text-gray-400">
                 {isAuthenticated && user 
                   ? `Niv ${Object.values(user.stats).reduce((total, stat) => total + stat.level, 0)} • ELO Moyen ${Math.round(Object.values(user.stats).reduce((total, stat) => total + stat.elo, 0) / Object.values(user.stats).length)}`
-                  : 'Niv 1 • 25 XP'
+                  : (loading ? 'Connexion en cours...' : 'Créez un compte pour commencer')
                 }
               </p>
             </div>
