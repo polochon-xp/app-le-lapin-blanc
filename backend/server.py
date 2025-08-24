@@ -112,6 +112,25 @@ TITLES_DATA = [
     {"level_required": 100, "name": "Légende", "description": "+10% sur toutes missions et immunité 1 fois/semaine", "bonus_type": "legend", "bonus_value": 10}
 ]
 
+SPECIAL_TITLES_DATA = [
+    {"id": "explorateur", "name": "Explorateur", "description": "Terminer une mission dans chaque catégorie au moins une fois", "condition": "mission_all_categories", "icon": "🗺️"},
+    {"id": "matinal", "name": "Matinal", "description": "Compléter 5 missions avant 8h du matin", "condition": "missions_before_8am", "required_count": 5, "icon": "🌅"},
+    {"id": "noctambule", "name": "Noctambule", "description": "Compléter 5 missions après minuit", "condition": "missions_after_midnight", "required_count": 5, "icon": "🌙"},
+    {"id": "inarretable", "name": "Inarrêtable", "description": "Enchaîner 30 jours de missions sans interruption", "condition": "consecutive_days", "required_count": 30, "icon": "🔥"},
+    {"id": "phenix", "name": "Phénix", "description": "Rattraper 5 missions ratées d'affilée dans la même semaine", "condition": "recovery_missions", "required_count": 5, "icon": "🔄"},
+    {"id": "creatif_fou", "name": "Créatif Fou", "description": "Compléter 10 missions de création en une seule semaine", "condition": "creation_missions_week", "required_count": 10, "icon": "🎨"},
+    {"id": "rat_bibliotheque", "name": "Rat de bibliothèque", "description": "Lire 100 missions lecture cumulées", "condition": "lecture_missions_total", "required_count": 100, "icon": "📚"},
+    {"id": "athlete", "name": "Athlète", "description": "Terminer 200 missions sport", "condition": "sport_missions_total", "required_count": 200, "icon": "🏃"},
+    {"id": "travailleur_acharne", "name": "Travailleur acharné", "description": "Terminer 200 missions travail", "condition": "travail_missions_total", "required_count": 200, "icon": "💼"},
+    {"id": "alchimiste", "name": "Alchimiste", "description": "Monter toutes les stats à plus de 50 une fois", "condition": "all_stats_above_50", "required_count": 50, "icon": "⚗️"},
+    {"id": "equilibre", "name": "Équilibré", "description": "Avoir toutes les stats à moins de 5 points d'écart", "condition": "balanced_stats", "required_count": 5, "icon": "⚖️"},
+    {"id": "collectionneur", "name": "Collectionneur", "description": "Débloquer 10 titres spéciaux", "condition": "special_titles_count", "required_count": 10, "icon": "🏆"},
+    {"id": "ancien", "name": "Ancien", "description": "Être actif depuis plus de 1 an", "condition": "account_age", "required_count": 365, "icon": "🕰️"},
+    {"id": "heros_jour", "name": "Héros d'un jour", "description": "Réussir 20 missions dans la même journée", "condition": "missions_one_day", "required_count": 20, "icon": "⭐"},
+    {"id": "sage", "name": "Sage", "description": "Compléter au moins 100 missions de lecture et 100 de création", "condition": "lecture_creation_100", "required_count": 100, "icon": "🧙"},
+    {"id": "marathonien", "name": "Marathonien", "description": "Terminer 500 missions cumulées (toutes catégories)", "condition": "total_missions", "required_count": 500, "icon": "🏃‍♂️"}
+]
+
 # Create the main app without a prefix
 app = FastAPI()
 
