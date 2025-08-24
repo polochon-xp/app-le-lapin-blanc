@@ -966,11 +966,11 @@ const GameInterface = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="friends" className="space-y-3">
+          <TabsContent value="social" className="space-y-3">
             <SocialTab currentTheme={currentTheme} />
           </TabsContent>
 
-          <TabsContent value="map" className="space-y-3">
+          <TabsContent value="attack" className="space-y-3">
             <AttackTab currentTheme={currentTheme} />
           </TabsContent>
 
