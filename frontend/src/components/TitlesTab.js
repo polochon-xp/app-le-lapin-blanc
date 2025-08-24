@@ -12,7 +12,10 @@ import {
   Zap, 
   Shield,
   CheckCircle,
-  Lock
+  Lock,
+  Award,
+  Medal,
+  Gem
 } from 'lucide-react';
 
 const TitlesTab = ({ currentTheme }) => {
