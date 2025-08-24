@@ -282,9 +282,14 @@ async def get_all_defenses():
     return DEFENSES_DATA
 
 @api_router.get("/titles")
-async def get_all_titles():
-    """Récupère tous les titres disponibles"""
+async def get_all_progression_titles():
+    """Récupère tous les titres de progression disponibles"""
     return TITLES_DATA
+
+@api_router.get("/special-titles")  
+async def get_all_special_titles():
+    """Récupère tous les titres spéciaux disponibles"""
+    return SPECIAL_TITLES_DATA
 
 @api_router.get("/user/attacks")
 async def get_user_attacks(current_user: User = Depends(get_current_user)):
