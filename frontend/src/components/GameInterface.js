@@ -42,6 +42,8 @@ import SocialTab from './SocialTab';
 import TitlesTab from './TitlesTab';
 import AuthModal from './AuthModal';
 import UserProfile from './UserProfile';
+import TimerInterface from './TimerInterface';
+import NotesTab from './NotesTab';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   mockPlayer, 
