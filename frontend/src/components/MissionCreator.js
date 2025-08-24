@@ -51,19 +51,8 @@ const MissionCreator = ({ onCreateMission, currentTheme, categories, onAddCatego
 
   // Fonction pour calculer automatiquement l'XP selon la catégorie et le temps
   const calculateXP = (category, estimatedTime, hasTimer) => {
-    const baseXP = {
-      'travail': 30,
-      'sport': 25,
-      'creation': 35,
-      'lecture': 20,
-      'adaptabilite': 30
-    };
-    
-    const categoryMultiplier = baseXP[category] || 25;
-    const timeBonus = Math.floor(estimatedTime / 15) * 5; // 5 XP par tranche de 15 min
-    const timerBonus = hasTimer ? 10 : 5; // Bonus si timer utilisé
-    
-    return Math.max(10, categoryMultiplier + timeBonus + timerBonus);
+    // Chaque mission rapporte toujours 5 XP
+    return 5;
   };
 
   const handleSubmit = (e) => {
