@@ -18,13 +18,16 @@ import {
 const TitlesTab = ({ currentTheme }) => {
   const [userTitles, setUserTitles] = useState(null);
   const [allTitles, setAllTitles] = useState([]);
+  const [specialTitles, setSpecialTitles] = useState([]);
   const [selectedTitle, setSelectedTitle] = useState(null);
   const [showTitleModal, setShowTitleModal] = useState(false);
+  const [activeSection, setActiveSection] = useState('progression'); // 'progression' ou 'special'
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchUserTitles();
     fetchAllTitles();
+    fetchSpecialTitles();
   }, []);
 
   const fetchUserTitles = async () => {
@@ -57,6 +60,18 @@ const TitlesTab = ({ currentTheme }) => {
       }
     } catch (error) {
       console.error('Erreur lors de la récupération de tous les titres:', error);
+    }
+  };
+
+  const fetchSpecialTitles = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/special-titles`);
+      if (response.ok) {
+        const data = await response.json();
+        setSpecialTitles(data);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des titres spéciaux:', error);
     }
   };
 
