@@ -30,7 +30,9 @@ import {
   Gauge,
   Download,
   Upload,
-  Save
+  Save,
+  FileText,
+  Timer
 } from 'lucide-react';
 import MissionCreator from './MissionCreator';
 import OptimizationTab from './OptimizationTab';
