@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     if (savedToken) {
       try {
         // Vérifier si le token est valide en récupérant le profil
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/me`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
           headers: {
             'Authorization': `Bearer ${savedToken}`,
             'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Informer le backend de la déconnexion
       if (token) {
-        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/logout`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/me`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
