@@ -43,6 +43,8 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     setLoading(true);
     setError('');
     setSuccess('');
+    // DEBUG - à supprimer après test
+    alert(`URL: ${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`);
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
