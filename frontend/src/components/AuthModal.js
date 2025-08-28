@@ -45,7 +45,6 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     setSuccess('');
 
     try {
-
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       const payload = isLogin 
         ? { username: formData.username, password: formData.password }
