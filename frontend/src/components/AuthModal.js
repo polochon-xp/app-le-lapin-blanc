@@ -47,8 +47,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     try {
 
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-                // DEBUG - à supprimer après test
-    const response = await fetch(`https://app-backend-xyk0.onrender.com${endpoint}`, {
+
       
       const payload = isLogin 
         ? { username: formData.username, password: formData.password }
