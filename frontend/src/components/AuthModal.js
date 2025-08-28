@@ -43,12 +43,12 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     setError('');
     setSuccess('');
 
-    try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const payload = isLogin 
-        ? { username: formData.username, password: formData.password }
-        : { username: formData.username, email: formData.email, password: formData.password };
+    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+    const payload = isLogin 
+      ? { username: formData.username, password: formData.password }
+      : { username: formData.username, email: formData.email, password: formData.password };
 
+    try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
         method: 'POST',
         headers: {
@@ -82,16 +82,16 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
               });
               onClose();
             }
-          } catch (error) {
-            console.error('Erreur lors de la récupération du profil:', error);
+          } catch (profileError) {
+            console.error('Erreur lors de la récupération du profil:', profileError);
           }
         }, 1500);
         
       } else {
         setError(data.detail || 'Une erreur est survenue');
       }
-    } catch (error) {
-      console.error('Erreur d\'authentification:', error);
+    } catch (fetchError) {
+      console.error('Erreur d\'authentification:', fetchError);
       setError('Erreur de connexion au serveur');
     }
 
