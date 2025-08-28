@@ -34,6 +34,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
     if (error) setError('');
   };
 
@@ -43,13 +44,14 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     setError('');
     setSuccess('');
 
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-    const payload = isLogin 
-      ? { username: formData.username, password: formData.password }
-      : { username: formData.username, email: formData.email, password: formData.password };
-
     try {
-      
+
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const payload = isLogin 
+        ? { username: formData.username, password: formData.password }
+        : { username: formData.username, email: formData.email, password: formData.password };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,11 +62,13 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
       const data = await response.json();
 
       if (response.ok) {
+        // Stocker le token
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('tokenType', data.token_type);
         
         setSuccess(isLogin ? 'Connexion réussie !' : 'Inscription réussie !');
         
+        // Récupérer les infos utilisateur
         setTimeout(async () => {
           try {
             const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
@@ -82,16 +86,16 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
               });
               onClose();
             }
-          } catch (profileError) {
-            console.error('Erreur lors de la récupération du profil:', profileError);
+          } catch (error) {
+            console.error('Erreur lors de la récupération du profil:', error);
           }
         }, 1500);
         
       } else {
         setError(data.detail || 'Une erreur est survenue');
       }
-    } catch (fetchError) {
-      console.error('Erreur d\'authentification:', fetchError);
+    } catch (error) {
+      console.error('Erreur d\'authentification:', error);
       setError('Erreur de connexion au serveur');
     }
 
@@ -131,6 +135,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
         </DialogHeader>
         
         <div className="space-y-6">
+          {/* Messages de retour */}
           {error && (
             <div 
               className="flex items-center gap-2 p-3 rounded-lg"
@@ -151,7 +156,9 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
             </div>
           )}
 
+          {/* Formulaire */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Nom d'utilisateur */}
             <div className="space-y-2">
               <Label htmlFor="username" style={{ color: currentTheme.textColor }}>
                 <User className="w-4 h-4 inline mr-2" />
@@ -173,6 +180,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
               />
             </div>
 
+            {/* Email (inscription seulement) */}
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="email" style={{ color: currentTheme.textColor }}>
@@ -196,6 +204,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
               </div>
             )}
 
+            {/* Mot de passe */}
             <div className="space-y-2">
               <Label htmlFor="password" style={{ color: currentTheme.textColor }}>
                 <Lock className="w-4 h-4 inline mr-2" />
@@ -235,6 +244,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
               )}
             </div>
 
+            {/* Bouton de soumission */}
             <Button 
               type="submit"
               disabled={loading || !validateForm()}
@@ -259,6 +269,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
             </Button>
           </form>
 
+          {/* Basculer entre connexion/inscription */}
           <div className="text-center">
             <p className="text-sm" style={{ color: currentTheme.textColor + 'aa' }}>
               {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}
@@ -274,6 +285,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
             </Button>
           </div>
 
+          {/* Informations sur Le Lapin Blanc */}
           <div 
             className="text-center p-4 rounded-lg border"
             style={{
