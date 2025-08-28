@@ -50,7 +50,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
         ? { username: formData.username, password: formData.password }
         : { username: formData.username, email: formData.email, password: formData.password };
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${endpoint}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
         // Récupérer les infos utilisateur
         setTimeout(async () => {
           try {
-            const profileResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/me`, {
+            const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
               headers: {
                 'Authorization': `Bearer ${data.access_token}`,
                 'Content-Type': 'application/json'
