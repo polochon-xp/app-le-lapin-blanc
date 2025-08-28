@@ -49,7 +49,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
       : { username: formData.username, email: formData.email, password: formData.password };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
+      
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
