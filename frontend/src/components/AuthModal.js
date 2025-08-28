@@ -45,10 +45,11 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     setSuccess('');
 
     try {
-          // DEBUG - à supprimer après test
+
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+                // DEBUG - à supprimer après test
     alert(`URL: ${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`);
       
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       const payload = isLogin 
         ? { username: formData.username, password: formData.password }
         : { username: formData.username, email: formData.email, password: formData.password };
