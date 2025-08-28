@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 import { 
   User, 
   Mail, 
@@ -10,88 +15,6 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-
-// Composants UI simples pour remplacer shadcn
-const Dialog = ({ open, onOpenChange, children }) => {
-  if (!open) return null;
-  
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div 
-        className="fixed inset-0 bg-black/50" 
-        onClick={() => onOpenChange(false)}
-      />
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
-  );
-};
-
-const DialogContent = ({ className, style, children }) => (
-  <div className={`bg-white rounded-lg p-6 max-w-md w-full ${className}`} style={style}>
-    {children}
-  </div>
-);
-
-const DialogHeader = ({ children }) => (
-  <div className="mb-4">
-    {children}
-  </div>
-);
-
-const DialogTitle = ({ className, style, children }) => (
-  <h2 className={`text-lg font-semibold ${className}`} style={style}>
-    {children}
-  </h2>
-);
-
-const Input = ({ className, style, ...props }) => (
-  <input 
-    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
-    style={style}
-    {...props}
-  />
-);
-
-const Label = ({ htmlFor, style, children }) => (
-  <label htmlFor={htmlFor} className="block text-sm font-medium mb-1" style={style}>
-    {children}
-  </label>
-);
-
-const Button = ({ 
-  type = "button", 
-  variant = "default", 
-  size = "default", 
-  disabled = false, 
-  className, 
-  style, 
-  onClick, 
-  children 
-}) => {
-  const baseClasses = "px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2";
-  const variantClasses = {
-    default: "bg-blue-500 text-white hover:bg-blue-600",
-    ghost: "bg-transparent hover:bg-gray-100"
-  };
-  const sizeClasses = {
-    default: "px-4 py-2",
-    sm: "px-2 py-1 text-sm"
-  };
-  
-  return (
-    <button
-      type={type}
-      disabled={disabled}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-      style={style}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};
 
 const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -107,14 +30,12 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value
     }));
     // Clear error when user starts typing
-    if (error) {
-      setError('');
-    }
+    if (error) setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -123,13 +44,14 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     setError('');
     setSuccess('');
 
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-    const payload = isLogin 
-      ? { username: formData.username, password: formData.password }
-      : { username: formData.username, email: formData.email, password: formData.password };
-
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${endpoint}`, {
+
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const payload = isLogin 
+        ? { username: formData.username, password: formData.password }
+        : { username: formData.username, email: formData.email, password: formData.password };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +71,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
         // Récupérer les infos utilisateur
         setTimeout(async () => {
           try {
-            const profileResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/me`, {
+            const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`, {
               headers: {
                 'Authorization': `Bearer ${data.access_token}`,
                 'Content-Type': 'application/json'
@@ -164,20 +86,20 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
               });
               onClose();
             }
-          } catch (profileError) {
-            console.error('Erreur lors de la récupération du profil:', profileError);
+          } catch (error) {
+            console.error('Erreur lors de la récupération du profil:', error);
           }
         }, 1500);
         
       } else {
         setError(data.detail || 'Une erreur est survenue');
       }
-    } catch (fetchError) {
-      console.error('Erreur d\'authentification:', fetchError);
+    } catch (error) {
+      console.error('Erreur d\'authentification:', error);
       setError('Erreur de connexion au serveur');
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   const switchMode = () => {
@@ -188,28 +110,18 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
   };
 
   const validateForm = () => {
-    if (!formData.username.trim()) {
-      return false;
-    }
-    if (!formData.password.trim()) {
-      return false;
-    }
-    if (!isLogin && !formData.email.trim()) {
-      return false;
-    }
-    if (!isLogin && !/\S+@\S+\.\S+/.test(formData.email)) {
-      return false;
-    }
-    if (formData.password.length < 6) {
-      return false;
-    }
+    if (!formData.username.trim()) return false;
+    if (!formData.password.trim()) return false;
+    if (!isLogin && !formData.email.trim()) return false;
+    if (!isLogin && !/\S+@\S+\.\S+/.test(formData.email)) return false;
+    if (formData.password.length < 6) return false;
     return true;
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="border-0 backdrop-blur-sm"
+        className="max-w-md border-0 bg-black/95 backdrop-blur-sm"
         style={{ backgroundColor: currentTheme.cardColor + 'f0' }}
       >
         <DialogHeader>
@@ -250,7 +162,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
             <div className="space-y-2">
               <Label htmlFor="username" style={{ color: currentTheme.textColor }}>
                 <User className="w-4 h-4 inline mr-2" />
-                Nom d&apos;utilisateur
+                Nom d'utilisateur
               </Label>
               <Input
                 id="username"
