@@ -47,10 +47,10 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess, currentTheme }) => {
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       const payload = isLogin 
-        ? { username: formData.username, password: formData.password };
+        ? { username: formData.username, password: formData.password }
         : { username: formData.username, email: formData.email, password: formData.password };
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
